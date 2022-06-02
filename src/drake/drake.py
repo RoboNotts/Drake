@@ -10,7 +10,7 @@ class Drake:
     def __init__(self, size='yolov5s', pretrained=True):
         # # Initialise the Model
         
-        model = torch.hub.load('ultralytics/yolov5', size, autoshape=False, pretrained=pretrained)
+        model = torch.hub.load('ultralytics/yolov5', size, pretrained=pretrained)
         model.conf = 0.25  # confidence threshold (0-1)
         model.iou = 0.45  # NMS IoU threshold (0-1)
         model.classes = None  # (optional list) filter by class, i.e. = [0, 15, 16] for persons, cats and dogs
@@ -33,24 +33,32 @@ class Drake:
         # ## Setup subscriber
         self.subscriber = rospy.Subscriber("cv_camera/image_raw", Image, self._onImageReceived)
         self.currentData = None
+
+        self.showImage = True
         
     def _onImageReceived(self, ros_data):
         self.currentData = ros_data
     
     def _publishImage(self):
-        data = self.currentData
+        data = self.currentData 
         if(data is None):
             print("No Image to publish...")
             return
-        print(data)
-        image = self.bridge.imgmsg_to_cv2(data, desired_encoding='rgb8')
-        cv2.imshow("Image window", image)
-        # with torch.no_grad():
-        #     result = self.model([image])
-        # for img in result.imgs:
-        #     self.imagePublisher.publish(self.bridge.cv2_to_imgmsg(img.to_cv_image()))
+        image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
+        
+        with torch.no_grad():
+            results = self.model(image)
+        print(results)
 
-    def mainloop(self, rate=1):
+        if(self.showImage):
+            results.render()
+            for i, img in enumerate(results.imgs):
+                cv2.imshow(f"Image {i}", img)
+            if cv2.waitKey(1) == 27:
+                self.showImage = False # esc to quit
+                cv2.destroyAllWindows()
+
+    def mainloop(self, rate=60):
         rate = rospy.Rate(rate)
         while not rospy.is_shutdown():
             self._publishImage()
