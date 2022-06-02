@@ -1,7 +1,8 @@
 import rospy
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
-import numpy
+import cv_bridge
+import cv2
+import numpy as np
 import torch
 import intel_extension_for_pytorch as ipex
 
@@ -23,14 +24,14 @@ class Drake:
 
         # # Setup ROS
         rospy.init_node('drake', anonymous=True)
-        self.bridge = CvBridge()
+        self.bridge = cv_bridge.CvBridge()
 
         # ## Setup publishers
         self.imagePublisher = rospy.Publisher('drake/image/rgb', Image, queue_size=1)
         # self.publisher = rospy.Publisher('/drake/detection', Image)
         
         # ## Setup subscriber
-        self.subscriber = rospy.Subscriber("camera/rgb/image_raw", Image, self._onImageReceived)
+        self.subscriber = rospy.Subscriber("cv_camera/image_raw", Image, self._onImageReceived)
         self.currentData = None
         
     def _onImageReceived(self, ros_data):
@@ -41,11 +42,13 @@ class Drake:
         if(data is None):
             print("No Image to publish...")
             return
-        image = self.bridge.imgmsg_to_cv2(data)
-        with torch.no_grad():
-            result = self.model(image)
-        for img in result.imgs:
-            self.imagePublisher.publish(CvBridge.cv2_to_imgmsg(img.to_cv_image()))
+        print(data)
+        image = self.bridge.imgmsg_to_cv2(data, desired_encoding='rgb8')
+        cv2.imshow("Image window", image)
+        # with torch.no_grad():
+        #     result = self.model([image])
+        # for img in result.imgs:
+        #     self.imagePublisher.publish(self.bridge.cv2_to_imgmsg(img.to_cv_image()))
 
     def mainloop(self, rate=1):
         rate = rospy.Rate(rate)
