@@ -38,9 +38,9 @@ class Drake:
         model.eval()
 
         # Not sure if the optimisation is even worth it, but it's not worse?
-
-        optimized_model = ipex.optimize(model)
-        self.model = optimized_model
+        model = ipex.optimize(model)
+        
+        self.model = model
 
         # # Setup ROS
         self.bridge = cv_bridge.CvBridge()
@@ -67,8 +67,7 @@ class Drake:
             return
         image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
         
-        with torch.no_grad():
-            results = self.model(image)
+        results = self.model(image)
         rospy.loginfo(results)
 
         xyxy = results.pandas().xyxy[0]
