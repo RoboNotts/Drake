@@ -168,6 +168,8 @@ cython_debug/
 
 # Ignore weight files from drake
 **/*.pt
+**/*.pkl
+**/*.pth
 
 # Ignore saved tes/processed images from runs
 runs/
