@@ -43,197 +43,197 @@ class FCOS(nn.Module):
 
         self.P5 = nn.Sequential(
             nn.Conv2d(
-                in_channels=2048,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=1,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=2048,
+                out_channels=256,
+                kernel_size=1,
+                stride=1,
                 padding=0,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.C4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=1024,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=1,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=1024,
+                out_channels=256,
+                kernel_size=1,
+                stride=1,
                 padding=0,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.P4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.C3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=512,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=1,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=512,
+                out_channels=256,
+                kernel_size=1,
+                stride=1,
                 padding=0,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.P3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.P6 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=2,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=2,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.P7 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=2,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=2,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
 
         self.head7 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
         self.conf7 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=22,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.Sigmoid(),  # 激活
+            nn.Sigmoid(),
         )
         self.loc7 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
+            nn.BatchNorm2d(256),
             nn.ReLU(),  # 激活
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=4,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
         )
 
         self.center7 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=1,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=1,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
             nn.Sigmoid()
@@ -241,104 +241,104 @@ class FCOS(nn.Module):
 
         self.head6 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
         self.conf6 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=22,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.Sigmoid(),  # 激活
+            nn.Sigmoid(),
         )
         self.loc6 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=4,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
         )
 
         self.center6 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=1,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=1,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
             nn.Sigmoid()
@@ -346,105 +346,105 @@ class FCOS(nn.Module):
 
         self.head5 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
         self.conf5 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=22,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.Sigmoid(),  # 激活
+            nn.Sigmoid(),
         )
 
         self.loc5 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=4,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
         )
 
         self.center5 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=1,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=1,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
             nn.Sigmoid()
@@ -452,105 +452,105 @@ class FCOS(nn.Module):
 
         self.head4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
         self.conf4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=22,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.Sigmoid(),  # 激活
+            nn.Sigmoid(),
         )
 
         self.loc4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=4,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
         )
 
         self.center4 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=1,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=1,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
             nn.Sigmoid()
@@ -558,105 +558,105 @@ class FCOS(nn.Module):
 
         self.head3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
         )
         self.conf3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=22,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.Sigmoid(),  # 激活
+            nn.Sigmoid(),
         )
 
         self.loc3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=256,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=256,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
-            nn.BatchNorm2d(256),  # 批标准化
-            nn.ReLU(),  # 激活
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=4,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=4,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
         )
 
         self.center3 = nn.Sequential(
             nn.Conv2d(
-                in_channels=256,  # 输入通道数
-                out_channels=1,  # 输出通道数（滤波器个数）
-                kernel_size=3,  # 掩膜尺寸
-                stride=1,  # 步长
+                in_channels=256,
+                out_channels=1,
+                kernel_size=3,
+                stride=1,
                 padding=1,
             ),
             nn.Sigmoid()

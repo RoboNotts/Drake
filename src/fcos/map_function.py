@@ -3,14 +3,14 @@ import math
 
 def compute_iou(rect1, rect2):
     """
-    功能：计算两个矩形的交并比损失
-    参数：
+    calculate iou between two bounding boxes
+    :param：
         rect1:[left1, top1, right1, bottom1]
         rect2:[left2, top2, right2, bottom2]
-    返回值：
-        iou:计算出的交并比
+    return：
+        iou
     """
-    # 获取矩形的四条边的位置
+    # obtain the index of boundaries
     left1 = rect1[0]
     top1 = rect1[1]
     right1 = rect1[2]
@@ -19,49 +19,49 @@ def compute_iou(rect1, rect2):
     top2 = rect2[1]
     right2 = rect2[2]
     bottom2 = rect2[3]
-    # 分别计算两个矩形的面积
+    # calculate the area of teh two bounding boxes, respectively
     s_rect1 = (bottom1 - top1) * (right1 - left1)
     s_rect2 = (bottom2 - top2) * (right2 - left2)
-    # 计算交叉矩形的各边坐标
+    # calculate the coordinate of intersection rectangle
     cross_left = max(left1, left2)
     cross_right = min(right1, right2)
     cross_top = max(top1, top2)
     cross_bottom = min(bottom1, bottom2)
-    # 判断交叉矩形是否存在
+    # judge if the intersection exists
     if cross_left >= cross_right or cross_top >= cross_bottom:
-        # 交叉矩形不存在时
+        # the intersection does not exist
         return 0
     else:
-        # 交叉矩形存在时
-        # 计算交叉矩形的面积
+        # the intersection exists
+        # calculate the area of the intersection
         s_cross = (cross_right - cross_left) * (cross_bottom - cross_top)
-        # 计算并返回交并比
+        # return iou
         return s_cross / (s_rect1 + s_rect2 - s_cross)
 
 
 class Pixel:
     """
-    一个特征点的类
+    class for a pixel on the feature map
     """
 
     def __init__(self, num, stride, i, j, thresholds):
-        self.num = num  # 该点所属的特征图编号
+        self.num = num  # the num of the feature map where the pixel is located
         self.stride = stride
-        self.status = 0  # 该点是否是正样本的状态码
-        self.area = 0  # 匹配的标签的面积
-        self.tag = [-1]  # 与该框匹配的标签框
-        self.i = i  # 在其特征图上对应的行号（从0开始）
-        self.j = j  # 在其特征图上对应的列号（从0开始）
-        self.thresholds = thresholds  # 多尺度训练时的阈值
-        self.center = 0  # 当该点为正样本时的抑制值
-        # 对应到原图上的坐标
+        self.status = 0  # marker to show if the pixel is a positive sample
+        self.area = 0  # the area of the bounding box matching the pixel
+        self.tag = [-1]  # the label of the boundnig box
+        self.i = i  # the horizontal index of the pixel on the feature map（start from 0）
+        self.j = j  # the vertical index of the pixel on the feature map（start from 0））
+        self.thresholds = thresholds  # the threshold for multiscale training
+        self.center = 0  # the offset when the pixel is a positive sample
+        # the corresponding coordinate of the pixel under teh scale of the raw input image
         self.x = int(stride / 2) + j * stride
         self.y = int(stride / 2) + i * stride
 
     def judge_pos(self, tags):
         """
-        判断该像素点是不是一个正样本点
-        :param tags: 全部标签
+        judge if the pixel is a positiev sample
+        :param tags: all labels
         :return:
         """
         for tag in tags:
@@ -70,45 +70,46 @@ class Pixel:
             xmax = tag[3]
             ymax = tag[4]
             if xmin < self.x < xmax and ymin < self.y < ymax:
-                # 计算该点距离各边的距离
+                # calculate the distance between the pixel and four boundries
                 l = self.x - xmin
                 t = self.y - ymin
                 r = xmax - self.x
                 b = ymax - self.y
                 if self.thresholds[0] <= max(l, t, r, b) <= self.thresholds[1]:
                     if self.status == 0:
-                        # 状态码变为1
+                        # change status to 1
                         self.status = 1
-                        # 设置该点所在标签内的面积
+                        # set the area of the bounding box
                         self.area = (xmax - xmin + 1) * (ymax - ymin + 1)
-                        # 设置该点的标签
+                        # set the label of the pixel
                         self.tag = tag
-                        # 设置该点的抑制值
+                        # set the offset
                         self.center = math.sqrt((min(l, r) / max(l, r)) * (min(t, b) / max(t, b)))
                     else:
-                        # 若该点在两个标签框的相交区域，则讲该点匹配给面积较小的标签框
+                        # if this pixel is situated in the intersection of two bounding box,
+                        # then assign it to the one with smaller area
                         area = (xmax - xmin + 1) * (ymax - ymin + 1)
                         if self.area > area:
-                            # 设置该点所在标签内的面积
+                            # set the area of the bounding box
                             self.area = (xmax - xmin + 1) * (ymax - ymin + 1)
-                            # 设置该点的标签
+                            # set the label of the pixel
                             self.tag = tag
-                            # 设置该点的抑制值
+                            # set the offset
                             self.center = math.sqrt((min(l, r) / max(l, r)) * (min(t, b) / max(t, b)))
 
 
 class Feature_map:
     """
-    一个特征图的类
+    class for a feature map
     """
 
     def __init__(self, num, row, col, stride, thresholds):
-        self.num = num  # 特征图编号
-        self.pixels = []  # 存储该特征图上特横点的列表
-        self.row = row  # 该特征图的行数
-        self.col = col  # 该特征图的列数
-        self.stride = stride  # 该特征图的下采样倍数
-        self.thresholds = thresholds  # 该特征图的多尺度阈值
+        self.num = num  # the num of the feature map
+        self.pixels = []  # a list containing all the pixels of the feature map
+        self.row = row  # the number of rows of the feature map
+        self.col = col  # the number of columns of the feature map
+        self.stride = stride  # the down sample rate of the feature map
+        self.thresholds = thresholds  # the threshold for multiscale training
         for i in range(self.row):
             for j in range(self.col):
                 pixel = Pixel(self.num, self.stride, i, j, self.thresholds)
@@ -117,14 +118,14 @@ class Feature_map:
 
 class Map_master:
     """
-    一个生成和管理全部特征图上的特征点的类
+    a class for generating and managing all faeture maps
     """
 
     def __init__(self, sizes):
-        self.feature_maps = []  # 一个存储全部特征图的列表
-        self.strides = [8, 16, 32, 64, 128]  # 各特征图的下采样倍数
-        self.sizes = sizes  # 各特征图的尺寸
-        self.num = 5  # 特征图数量
+        self.feature_maps = []  # a list contaiinng all feature maps
+        self.strides = [8, 16, 32, 64, 128]  # the down sample rates of all feature maps
+        self.sizes = sizes  # the size of each feature map
+        self.num = 5  # the number of feature maps
         self.thresholds = [0, 32, 64, 128, 256, float('inf')]
         for i in range(self.num):
             feature_map = Feature_map(i, self.sizes[i][0], self.sizes[i][1], self.strides[i],
@@ -133,25 +134,25 @@ class Map_master:
 
     def decode_coordinate(self, tag, row, col):
         """
-        将特征点转化为原图上的坐标
+        transfer the coordinate from feature map scale to input image scale
         :param tag: [num,i,j,c,mark,l,t,r,b]
-        :param row: 原图的行数
-        :param col: 原图的列数
+        :param row: the number of rows of raw image
+        :param col: the number of columns of raw image
         :return:
         """
-        num = tag[0]  # 该特征点所处特征图编号
-        i = tag[1]  # 该点所在特征图的行
-        j = tag[2]  # 该点所在特征图的列
-        c = tag[3]  # 该点的类别
-        mark = tag[4]  # 该类别的置信度
+        num = tag[0]  # the index of the feature map where the pixel is located at
+        i = tag[1]  # the horizontal index of the pixel
+        j = tag[2]  # the vertical index of the pixel
+        c = tag[3]  # the class of the pixel
+        mark = tag[4]  # the confidence of the class of the pixel
         l = tag[5]
         t = tag[6]
         r = tag[7]
         b = tag[8]
-        # 确定该点在原图上的位置
+        # calculate the coordinate of the pixel under input raw image scale
         x = int(self.strides[num] / 2) + j * self.strides[num]
         y = int(self.strides[num] / 2) + i * self.strides[num]
-        # 确定该点的左上角和右下角
+        # calculate the top left and right bottom coordinate of the pixel under input image scale
         xmin = max(int(x - l), 0)
         ymin = max(int(y - t), 0)
         xmax = min(int(x + r), col - 1)

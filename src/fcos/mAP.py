@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import map_function as mf
-from DataLoader import TestSet
+from DataLoader import ValSet
 import torch.utils.data as Data
 
 
@@ -59,20 +59,10 @@ def printPR(points, GT_num):
 
 
 def set_mAP_points(boxes, gt_boxes, mAP_boxes, tag, threshold=0.5):
-    '''
-	计算召回率
-	参数：
-		boxes：神经网络输出的物体框
-		gt_boxes：标签框
-		tag：被计算召回率的类别
-		threshold：交并比阈值
-	'''
-
-    num = 0  # gt框总数
+    num = 0  # the total number of ground truth
     detected_gt = []
     for box in boxes:
-        TP = False  # 指示该预测框是否为TP
-        iou_num = 0  # 统计该框与GT的IOU大于阈值的个数
+        TP = False  # judge if the bndbox is True Positive
         if box[0] == tag:
             for gt in gt_boxes:
                 if gt[0] == tag and gt not in detected_gt:
@@ -95,85 +85,91 @@ def set_mAP_points(boxes, gt_boxes, mAP_boxes, tag, threshold=0.5):
     return num
 
 
-if __name__ == '__main__':
-    # 加载神经网络
-    net = torch.load('./models/net50.pkl')
+def returnMAP(net):
     net.cuda()
     net.eval()
     # load test set
-    test_set = TestSet()
+    test_set = ValSet()
     loader = Data.DataLoader(
         dataset=test_set,  # torch TensorDataset format
         batch_size=1,  # mini batch size
-        shuffle=True,  # 要不要打乱数据 (打乱比较好)
-        num_workers=2,  # 多线程来读数据
+        shuffle=True,
+        num_workers=2,
     )
-    # 定义精度和召回率
-    mAP_bottle = []
+    # initialize map curve
     mAP_cup = []
-    mAP_bowl = []
     mAP_plate = []
+    mAP_bowl = []
+    mAP_towel = []
+    mAP_shoes = []
+    mAP_sponge = []
+    mAP_bottle = []
+    mAP_toothbrush = []
+    mAP_toothpaste = []
+    mAP_tray = []
+    mAP_sweater = []
+    mAP_cellphone = []
+    mAP_banana = []
+    mAP_medicine_bottle = []
+    mAP_reading_glasses = []
+    mAP_flashlight = []
+    mAP_pill_box = []
+    mAP_book = []
+    mAP_knife = []
+    mAP_cellphone_charger = []
+    mAP_shopping_bag = []
+    mAP_keyboard = []
+
+    mAP_all = [mAP_cup, mAP_plate, mAP_bowl, mAP_towel, mAP_shoes, mAP_sponge, mAP_bottle, mAP_toothbrush,
+               mAP_toothpaste, mAP_tray, mAP_sweater, mAP_cellphone, mAP_banana, mAP_medicine_bottle,
+               mAP_reading_glasses, mAP_flashlight, mAP_pill_box, mAP_book, mAP_knife, mAP_cellphone_charger,
+               mAP_shopping_bag,
+               mAP_keyboard]
     # initialize the total of gt of each class
-    gt_bottle = 0
     gt_cup = 0
-    gt_bowl = 0
     gt_plate = 0
-    # 逐图检测
+    gt_bowl = 0
+    gt_towel = 0
+    gt_shoes = 0
+    gt_sponge = 0
+    gt_bottle = 0
+    gt_toothbrush = 0
+    gt_toothpaste = 0
+    gt_tray = 0
+    gt_sweater = 0
+    gt_cellphone = 0
+    gt_banana = 0
+    gt_medicine_bottle = 0
+    gt_reading_glasses = 0
+    gt_flashlight = 0
+    gt_pill_box = 0
+    gt_book = 0
+    gt_knife = 0
+    gt_cellphone_charger = 0
+    gt_shopping_bag = 0
+    gt_keyboard = 0
+
+    gt_all = [gt_cup, gt_plate, gt_bowl, gt_towel, gt_shoes, gt_sponge, gt_bottle, gt_toothbrush, gt_toothpaste,
+              gt_tray, gt_sweater, gt_cellphone, gt_banana, gt_medicine_bottle, gt_reading_glasses, gt_flashlight,
+              gt_pill_box, gt_book, gt_knife, gt_cellphone_charger, gt_shopping_bag, gt_keyboard]
+    # traverse validation set
     for step, label_paths in tqdm(enumerate(loader)):
-        # 读取一帧
-        torch_images, labels = get_image.get_label(label_paths, True)
+        # get an image
+        torch_images, labels = get_image.get_label(label_paths)
         labels = labels[0]
         torch_images = torch_images.cuda()
-        # 预测
+        # predict
+        row = torch_images.shape[2]
+        col = torch_images.shape[3]
         confs, locs, centers = net(torch_images)
-        boxes = prediction(confs, locs, centers, 300, 300)
+        boxes = prediction(confs, locs, centers, row, col)
         boxes.sort(key=take2, reverse=True)
-        gt_bottle += set_mAP_points(boxes, labels, mAP_bottle, 0)
-        gt_cup += set_mAP_points(boxes, labels, mAP_cup, 1)
-        gt_bowl += set_mAP_points(boxes, labels, mAP_bowl, 2)
-        gt_plate += set_mAP_points(boxes, labels, mAP_plate, 3)
-    mAP_bottle.sort(key=take2, reverse=True)
-    mAP_cup.sort(key=take2, reverse=True)
-    mAP_bowl.sort(key=take2, reverse=True)
-    mAP_plate.sort(key=take2, reverse=True)
-    p_bottle, r_bottle, ap_bottle = compute_mAP(mAP_bottle, gt_bottle)
-    p_cup, r_cup, ap_cup = compute_mAP(mAP_cup, gt_cup)
-    p_bowl, r_bowl, ap_bowl = compute_mAP(mAP_bowl, gt_bowl)
-    p_plate, r_plate, ap_plate = compute_mAP(mAP_plate, gt_plate)
-    GT = gt_bottle + gt_cup + gt_bowl + gt_plate
-    mAP = (ap_bottle * gt_bottle + ap_cup * gt_cup + ap_bowl * gt_bowl + ap_plate * gt_plate) / GT
-    all_boxes = mAP_bottle + mAP_cup + mAP_bowl + mAP_plate
-    print('对bottle的样本：')
-    print('精度为：' + str(p_bottle))
-    print('召回率为：' + str(r_bottle))
-    print('AP为：' + str(ap_bottle))
-
-    print('对cup的样本：')
-    print('精度为：' + str(p_cup))
-    print('召回率为：' + str(r_cup))
-    print('AP为：' + str(ap_cup))
-
-    print('对bowl的样本：')
-    print('精度为：' + str(p_bowl))
-    print('召回率为：' + str(r_bowl))
-    print('AP为：' + str(ap_bowl))
-
-    print('对plate的样本：')
-    print('精度为：' + str(p_plate))
-    print('召回率为：' + str(r_plate))
-    print('AP为：' + str(ap_plate))
-
-    avg_p = (p_bottle * gt_bottle + p_cup * gt_cup + p_bowl * gt_bowl + p_plate * gt_plate) / GT
-    avg_r = (r_bottle * gt_bottle + r_cup * gt_cup + r_bowl * gt_bowl + r_plate * gt_plate) / GT
-    avg_ap = (ap_bottle * gt_bottle + ap_cup * gt_cup + ap_bowl * gt_bowl + ap_plate * gt_plate) / GT
-    f1_score = 2 * avg_p * avg_r / (avg_p + avg_r)
-    print('on average：')
-    print('精度为：' + str(avg_p))
-    print('召回率为：' + str(avg_r))
-    print('mAP为：' + str(mAP))
-    print('f1 score: ' + str(f1_score))
-
-    all_boxes.sort(key=take2, reverse=True)
-    pre, recall = printPR(all_boxes, GT)
-    # np.save("./PRcurve/precision", pre)
-    # np.save("./PRcurve/recall", recall)
+        for i in range(len(gt_all)):
+            gt_all[i] += set_mAP_points(boxes, labels, mAP_all[i], i)
+    mAP = 0
+    for i in range(len(mAP_all)):
+        mAP_all[i].sort(key=take2, reverse=True)
+        p, r, ap = compute_mAP(mAP_all[i], gt_all[i])
+        mAP += ap * gt_all[i]
+    mAP = mAP / sum(gt_all)
+    return mAP
