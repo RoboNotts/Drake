@@ -1,7 +1,9 @@
 import cv_bridge
 import intel_extension_for_pytorch as ipex
 from fcos.predict import prediction
+from fcos.TorchDataAugmentation import preprocessing
 import rospy
+import numpy as np
 import torch
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
@@ -55,11 +57,13 @@ class Drake:
             rospy.logwarn("No Image to publish...")
             return
         
+        # Get Image and pre-process
         image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
+        torch_image = torch.from_numpy(np.transpose(image, (2,0,1)))
+        torch_image = preprocessing(torch_image).unsqueeze(0)
         # Use FCOS model to predict
         dimensions = image.shape
-        result = self.model(image)
-        confs, locs, centers = result
+        confs, locs, centers = self.model(torch_image)
         boxes = prediction(confs, locs, centers, dimensions[0], dimensions[1])
         
         # Publish the result

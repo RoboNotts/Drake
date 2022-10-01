@@ -98,7 +98,12 @@ def prediction(confs, locs, centers, row, col):
 
 if __name__ == '__main__':
     # load class list
-    fh = open('./classes.txt', 'r')
+    try:
+        fh = open('./classes.txt', 'r')
+    except FileNotFoundError:
+        print("classes.txt file was not found...")
+        exit(0)
+        
     # obtain class list
     classes = []
     for line in fh:
