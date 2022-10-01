@@ -4,27 +4,28 @@ import get_image
 from LossFunction import FCOSloss
 from net import FCOS
 import torch.utils.data as Data
+from mAP import returnMAP
 
 # torch.manual_seed(1)	#reproducible
 
-# 超参数
-BATCH_SIZE = 16
+# hyper parameters
+BATCH_SIZE = 6
 EPOCH = 1000
-LR = 0.0001  # 学习RATE
-FT_LR = 0.000001  # Fine Tuning部分学习率
-start = 11
-w_d = 0.005
-optimizername = 'Adam'
+LR = 0.0001  # learning rate
+FT_LR = 0.000001  # learning rate for frozen parameters
+start = 0
+w_d = 0.005  # weigh decay
+optimizername = 'Adam'  # initialize optimizer
 
-# 初始化神经网络
-# net = FCOS()
-net = torch.load('./models/net'+ str(start-1) + '.pkl') # 43,49
+# initialize model
+net = FCOS()
+# net = torch.load('./module/net'+ str(start-1) + '.pkl') # 43,49
 
-# 初始化训练和测试gpu
+# initailize gpu for training and testing
 train_device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 net.to(train_device)
 test_device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# 设置权重衰减
+# apply hyper-parameters
 weight_p, bias_p, FT_weight_p, FT_bias_p, feat_weight_p, feat_bias_p = [], [], [], [], [], []
 
 for name, p in net.named_parameters():
@@ -39,7 +40,7 @@ for name, p in net.named_parameters():
         else:
             weight_p += [p]
 
-# 初始化optimizer和损失函数
+# initialize optimizer and loss function
 if optimizername == 'SGD':
     optimizer = torch.optim.SGD([{'params': weight_p, 'weight_decay': w_d, 'lr': LR},
                                  {'params': bias_p, 'weight_decay': 0, 'lr': LR},
@@ -54,30 +55,38 @@ elif optimizername == 'Adam':
                                   ])
 loss_func = FCOSloss()
 
-# 初始化数据集
+# initialize training set
 torch_dataset = TrainSet()
-# 把dataset放入DataLoader
+# initialized dataloader
 loader = Data.DataLoader(
     dataset=torch_dataset,  # torch TensorDataset format
     batch_size=BATCH_SIZE,  # mini batch size
-    shuffle=True,  # 要不要打乱数据 (打乱比较好)
-    num_workers=2,  # 多线程来读数据
+    shuffle=True,  # shuffle the dataset
+    num_workers=2,  # reading dataset by multi threads
 )
-# 训练所有整套数据EPOCH次
+# initialize maximum mAP
+max_mAP = 0
+# training
 for epoch in range(start, EPOCH):
-    # 每次释放BATCH_SIZE个图片路径
+    # release a mini-batch data
     for step, image_paths in enumerate(loader):
-        # 读取全部图片和标签
+        # read images and labels
         torch_images, labels = get_image.get_label(image_paths)
         torch_images = torch_images.to(train_device)
-        # 获取该图片的特征图
+        # obtain feature maps output by the model
         confs, locs, centers = net(torch_images)  # .to(train_device)
-        # 训练
+        # training
         loss = loss_func(confs, locs, centers, labels, train_device)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         print('Epoch:', epoch, '|train loss:%.4f' % loss)
-    # 保存训练好的神经
-    # torch.save(classifier, './models/classifier' + str(epoch) + '.pkl')
-    torch.save(net, './models/net' + str(epoch) + '.pkl')
+    # save model
+    # torch.save(classifier, './module/classifier' + str(epoch) + '.pkl')
+    # evaluate the performance of current progress
+    mAP = returnMAP(net)
+    print('Epoch:', epoch, '|mAP:%.4f' % mAP)
+    if mAP >= max_mAP:
+        net.cpu()
+        torch.save(net, './module/net' + str(epoch) + '.pkl')
+        net.to(train_device)
