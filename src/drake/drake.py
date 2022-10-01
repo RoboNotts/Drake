@@ -14,7 +14,7 @@ class Drake:
         def __init__(self, *args: object) -> None:
             super().__init__("Size name is invalid!", *args)
 
-    def __init__(self, /, size, confidence, iou, classes, publishImage, image):
+    def __init__(self, size, confidence, iou, classes, publishImage, image):
         # # Initialise the Model
 
         model = torch.load('./models/net50.pkl') # Will currently only be object recognition model
@@ -67,7 +67,7 @@ class Drake:
         boxes = prediction(confs, locs, centers, dimensions[0], dimensions[1])
         
         # Publish the result
-        _publishBoxes(boxes)
+        self._publishBoxes(boxes)
         # If we want to publish the image, we do that also.
         if (self.publishImage):
             results.render()
