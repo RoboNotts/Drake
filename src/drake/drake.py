@@ -12,17 +12,16 @@ class Drake:
         def __init__(self, *args: object) -> None:
             super().__init__("Size name is invalid!", *args)
 
-    def __init__(self, /, size, confidence, iou, classes, exportImage, image):
+    def __init__(self, /, size, confidence, iou, classes, publishImage, image):
         # # Initialise the Model
 
         model = torch.load('./models/net50.pkl') # Will currently only be object recognition model
         model.conf = confidence  # confidence threshold (0-1)
-        model.iou = iou  # NMS IoU threshold (0-1)
+        model.iou = iou  # NMS Intersectuib over Union threshold (0-1)
         model.classes = classes if len(
             classes) > 0 else None  # (optional list) filter by class, i.e. = [0, 15, 16] for persons, cats and dogs
 
         model.eval()
-
         # Not sure if the optimisation is even worth it, but it's not worse?
         model = ipex.optimize(model)
 
@@ -42,46 +41,48 @@ class Drake:
         }
         
         self.currentImage = None
-        self.exportImage = exportImage
+        self.publishImage = publishImage
 
     # When we get an Image msg
     def _onImageReceived(self, msg):
         self.currentImage = msg
 
-    # Publishes bounding boxes and images to 
-    def _publishImage(self):
+    # Takes an image, runs it through the model
+    def _processImage(self):
         data = self.currentImage
         if (data is None): 
             # No image.
             rospy.logwarn("No Image to publish...")
             return
         
-        image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # Makes the ROS image work with 
-
-        output = DrakeResults()
+        image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
+        # Use FCOS model to predict
+        dimensions = image.shape
+        result = self.model(image)
+        confs, locs, centers = result
+        boxes = prediction(confs, locs, centers, dimensions[0], dimensions[1])
         
-        results = self.model(image)
-        rospy.loginfo(results)
-
-        xyxy = results.pandas().xyxy[0]
-        xyxy.rename(columns={"class": "class_"}, inplace=True)
-
-        
-        output.speed, output.inference, output.NMSPerImage = results.t
-        output.results = [DrakeResult(**detection) for detection in xyxy.to_dict(orient='records')]
-        output.resultsCount = len(results)
-
-        self.publishers["bounding_boxes"].publish(output)
-
-        if (self.exportImage):
+        # Publish the result
+        _publishBoxes(boxes)
+        # If we want to publish the image, we do that also.
+        if (self.publishImage):
             results.render()
             self.publishers["image_with_bounding_boxes"].publish(
                 self.bridge.cv2_to_imgmsg(results.imgs[0], encoding="bgr8"))
 
+    # Publishes the bounding box data. If wanted, also publishes the image with added bounding boxes
+    def _publishBoxes(boxes):
+        output = DrakeResults()
+        output.resultsCount = len(boxes)
+        output.results = [DrakeResult(box) for box in boxes]
+
+        self.publishers["bounding_boxes"].publish(output)
+        
+    
     def main(*args, rate, **kwargs):
-        rospy.init_node('drake', anonymous=True)
+        rospy.init_node('drake') # Only one 'drake' should ever be runing, so I'm getting rid of the anonymous
         d = Drake(*args, **kwargs)
         rate = rospy.Rate(rate)
-        while not rospy.is_shutdown():
-            d._publishImage()
+        while not rospy.is_shutdown(): # Main loop.
+            d._processImage()
             rate.sleep()

@@ -56,7 +56,7 @@ def prediction(confs, locs, centers, row, col):
             continue
         while len(GT) > 0:
             max_obj = []
-            for obj in GT[:]:
+            for obj in GT:
                 # 寻找同一类别内置信度最高的框
                 if max_obj == []:
                     max_obj = obj
@@ -68,7 +68,7 @@ def prediction(confs, locs, centers, row, col):
             boxes.append(max_obj)
             if len(GT) > 0:
                 # 删除与被选中框重合度较高的框
-                for obj in GT[:]:
+                for obj in GT:
                     # 计算当前框与被选中物体盒子的交并比
                     iou = mf.compute_iou([obj[2], obj[3], obj[4], obj[5]],
                                          [max_obj[2], max_obj[3], max_obj[4], max_obj[5]])
@@ -80,7 +80,7 @@ def prediction(confs, locs, centers, row, col):
 
 if __name__ == '__main__':
     # 加载神经网络
-    net = torch.load('.')
+    net = torch.load('.') 
     net.eval()
     net.cuda()
     # load test set

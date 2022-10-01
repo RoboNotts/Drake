@@ -1,7 +1,7 @@
-string name
-int32 class
+string class
 float64 confidence
-float32 xmin
-float32 ymin
-float32 xmax
-float32 ymax
+float64 xmin
+float64 ymin
+float64 xmax
+float64 ymax
+string name
