@@ -29,6 +29,9 @@ def get_label(label_ls):
         path = root.getElementsByTagName('path')[0]
         pathname = "./" + path.childNodes[0].data
         image = cv2.imread(pathname)
+        # obtain image size
+        row = image.shape[0]
+        col = image.shape[1]
         # image preprocessing
         torch_image = torch.from_numpy(np.transpose(image, (2, 0, 1)))
         torch_image = preprocessing(torch_image).unsqueeze(0)
@@ -56,10 +59,10 @@ def get_label(label_ls):
             tag = label_list.index(name_data)  # the num of the category, which starts with 0
             # print(tag)
             # obtain top left anf right bottom coordinate
-            left = xmin_data
-            top = ymin_data
-            right = xmax_data
-            bottom = ymax_data
+            left = int(480 * xmin_data / col)
+            top = int(360 * ymin_data / row)
+            right = int(480 * xmax_data / col)
+            bottom = int(360 * ymax_data / row)
             l = [tag, left, top, right, bottom]
             tags.append(l)
         labels.append(tags)

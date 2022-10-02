@@ -2,10 +2,11 @@ import rospy
 import numpy as np
 import torch
 import cv_bridge
+import cv2
 from fcos.predict import prediction
 import fcos.map_function as mf
 from fcos.TorchDataAugmentation import preprocessing
-import fcos.net
+import fcos.net as net
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
 
@@ -17,10 +18,8 @@ class Drake:
 
     def __init__(self, classes, image):
         # # Initialise the Model
-
-        model = torch.load('./src/Drake/src/fcos/module/net135.pkl') # Will currently only be object recognition model
-        model.conf = confidence  # confidence threshold (0-1)
-        model.iou = iou  # NMS Intersectuib over Union threshold (0-1)
+        model = net.FCOS()
+        model.load_state_dict(torch.load('./src/Drake/src/fcos/module/net178_params.pkl')) # Will currently only be object recognition model
         model.classes = classes if len(
             classes) > 0 else None  # (optional list) filter by class, i.e. = [0, 15, 16] for persons, cats and dogs
 
@@ -43,7 +42,6 @@ class Drake:
         }
         
         self.currentImage = None
-        self.publishImage = publishImage
 
     # When we get an Image msg
     def _onImageReceived(self, msg):
@@ -68,17 +66,27 @@ class Drake:
         
         # Publish the result
         self._publishBoxes(boxes)
-        # If we want to publish the image, we do that also.
-        if (self.publishImage):
-            results.render()
-            self.publishers["image_with_bounding_boxes"].publish(
-                self.bridge.cv2_to_imgmsg(results.imgs[0], encoding="bgr8"))
+
+        # This code will output the image with the boxes. To be implemented
+        # frame = image.copy()
+        # frame = cv2.resize(frame, (480, 360))
+        # for box in boxes:
+        #     if box[1] > 0.4:
+        #         xmin = box[2]
+        #         ymin = box[3]
+        #         xmax = box[4]
+        #         ymax = box[5]
+        #         # draw rectangle
+        #         frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
+        #         frame = cv2.putText(frame, str(box[0]), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+        #                             (255, 40, 0), 2)
+        # cv2.imwrite('object.png', frame)
 
     # Publishes the bounding box data. If wanted, also publishes the image with added bounding boxes
-    def _publishBoxes(boxes):
+    def _publishBoxes(self, boxes):
         output = DrakeResults()
         output.resultsCount = len(boxes)
-        output.results = [DrakeResult(box) for box in boxes]
+        output.results = [DrakeResult(*box) for box in boxes]
 
         self.publishers["bounding_boxes"].publish(output)
         

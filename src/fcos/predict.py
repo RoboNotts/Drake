@@ -66,7 +66,7 @@ def prediction(confs, locs, centers, row, col):
                            loc[0, 1, i, j], loc[0, 2, i, j], loc[0, 3, i, j]]
                     box = map_master.decode_coordinate(box, row, col)
                     GTmaster[indexes[i][j]].append(box)
-    # initialize a empty list for returning the final detected bounding boxes after NMS
+    # initialize an empty list for returning the final detected bounding boxes after NMS
     boxes = []
     # non maximum suppression (NMS)
     for GT in GTmaster:
@@ -74,7 +74,7 @@ def prediction(confs, locs, centers, row, col):
             continue
         while len(GT) > 0:
             max_obj = []
-            for obj in GT:
+            for obj in GT[:]:
                 # obtain the bounding box with the highest confidence  within the same category
                 if max_obj == []:
                     max_obj = obj
@@ -86,7 +86,7 @@ def prediction(confs, locs, centers, row, col):
             boxes.append(max_obj)
             if len(GT) > 0:
                 # remove other boxes of the same category whose iou between it and the selected box is larger than the threshold
-                for obj in GT:
+                for obj in GT[:]:
                     # calculate the iou between it and the selected bounding box
                     iou = mf.compute_iou([obj[2], obj[3], obj[4], obj[5]],
                                          [max_obj[2], max_obj[3], max_obj[4], max_obj[5]])
@@ -111,14 +111,14 @@ if __name__ == '__main__':
         classes.append(line)
     fh.close()
     # load the model
-    net = torch.load('./module/net40.pkl')
+    net = torch.load('./module/net178.pkl')
     net.eval()
     # load test set
     test_set = TestSet()
     loader = Data.DataLoader(
         dataset=test_set,  # torch TensorDataset format
         batch_size=1,  # mini batch size
-        shuffle=True,  # shuffle the daatset
+        shuffle=True,  # shuffle the dataset
         num_workers=2,  # read data by multi threads
     )
     # detect
@@ -135,12 +135,13 @@ if __name__ == '__main__':
         pathname = "./" + path.childNodes[0].data
         # read the image
         frame = cv2.imread(pathname)
-
+        frame = cv2.resize(frame, (480, 360))
         row = frame.shape[0]
         col = frame.shape[1]
         torch_images, labels = get_image.get_label(label_paths)
-        # predict
-        confs, locs, centers = net(torch_images)
+        with torch.no_grad():
+            # predict
+            confs, locs, centers = net(torch_images)
         boxes = prediction(confs, locs, centers, row, col)
         for box in boxes:
             xmin = box[2]
@@ -148,9 +149,9 @@ if __name__ == '__main__':
             xmax = box[4]
             ymax = box[5]
             # draw rectangle
-            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 250, 250), 3)
+            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 0), 3)
             frame = cv2.putText(frame, classes[box[0]], (xmin, ymin), cv2.FONT_HERSHEY_COMPLEX, 1.0,
-                                (100, 200, 200), 2)
+                                (255, 0, 0), 2)
         cv2.imshow('object detector', frame)
         if cv2.waitKey(0) & 0xFF == 27:
             break

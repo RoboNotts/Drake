@@ -2,7 +2,7 @@ import torchvision.transforms as transforms
 import torch
 
 
-def preprocessing(image, resize=True, norm=True, size=[480, 640]):
+def preprocessing(image, resize=True, norm=True, size=[360, 480]):
     """preprocessing the image before sending it to the neural network"""
     if resize:
         image = transforms.functional.resize(image, size)
