@@ -2,14 +2,14 @@ import os
 import xml.dom.minidom
 import cv2
 import torch
-from predict import prediction
+from fcos.predict import prediction
 from tqdm import tqdm
-import get_image
+import fcos.get_image
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
-import map_function as mf
-from DataLoader import ValSet
+import fcos.map_function as mf
+from fcos.DataLoader import ValSet
 import torch.utils.data as Data
 
 

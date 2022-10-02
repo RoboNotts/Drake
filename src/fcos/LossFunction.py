@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import map_function as mf
+import fcos.map_function as mf
 
 
 class IOUloss(nn.Module):

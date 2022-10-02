@@ -1,10 +1,10 @@
 import torch
 import xml.dom.minidom
 import cv2
-import map_function as mf
-from DataLoader import TestSet, TrainSet
+import fcos.map_function as mf
+from fcos.DataLoader import TestSet, TrainSet
 import torch.utils.data as Data
-import get_image
+import fcos.get_image
 
 
 def prediction(confs, locs, centers, row, col):

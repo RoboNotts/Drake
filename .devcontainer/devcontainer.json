@@ -7,10 +7,14 @@
 		"ms-python.python",
 		"ms-iot.vscode-ros"
 	],
-    "settings": {
-        "python.analysis.extraPaths": [
-            "/home/robonotts/devel/lib/python3/dist-packages",
-            "/opt/ros/noetic/lib/python3/dist-packages"
-        ]
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.analysis.extraPaths": [
+                    "/home/robonotts/devel/lib/python3/dist-packages",
+                    "/opt/ros/noetic/lib/python3/dist-packages"
+                ]
+            }
+        }
     }
 }

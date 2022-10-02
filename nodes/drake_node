@@ -6,10 +6,6 @@ from drake import Drake
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv5 and publishes the output (and optionally bounding boxed images) to ROS.")
 
-    parser.add_argument('--size', nargs='?', type=str, default='yolov5s', help="The size of the yolo model to use for detection of an object")
-    parser.add_argument('--confidence', nargs='?', type=float, default=0.25, help="The confidence threshold for detection of an object")
-    parser.add_argument('--iou', nargs='?', type=float, default=0.45, help="The NMS IoU threshold for detection of an object")
-    parser.add_argument('--exportImage', action=argparse.BooleanOptionalAction, help="Export an image to ROS of the image output")
     parser.add_argument('--image', nargs='?', type=str, default="cv_camera/image_raw", help="The ROS topic which has the image input")
     parser.add_argument('--rate', nargs='?', type=int, default=60, help="The maximum rate of detection from this node")
     parser.add_argument('classes', nargs='*', type=float, default=None, help="The classes to filter")

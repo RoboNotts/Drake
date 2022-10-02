@@ -1,10 +1,11 @@
-import cv_bridge
-import intel_extension_for_pytorch as ipex
-from fcos.predict import prediction
-from fcos.TorchDataAugmentation import preprocessing
 import rospy
 import numpy as np
 import torch
+import cv_bridge
+from fcos.predict import prediction
+import fcos.map_function as mf
+from fcos.TorchDataAugmentation import preprocessing
+import fcos.net
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
 
@@ -14,10 +15,10 @@ class Drake:
         def __init__(self, *args: object) -> None:
             super().__init__("Size name is invalid!", *args)
 
-    def __init__(self, size, confidence, iou, classes, publishImage, image):
+    def __init__(self, classes, image):
         # # Initialise the Model
 
-        model = torch.load('.fcos/models/net50.pkl') # Will currently only be object recognition model
+        model = torch.load('./src/Drake/src/fcos/module/net135.pkl') # Will currently only be object recognition model
         model.conf = confidence  # confidence threshold (0-1)
         model.iou = iou  # NMS Intersectuib over Union threshold (0-1)
         model.classes = classes if len(
@@ -25,7 +26,6 @@ class Drake:
 
         model.eval()
         # Not sure if the optimisation is even worth it, but it's not worse?
-        model = ipex.optimize(model)
 
         self.model = model
 

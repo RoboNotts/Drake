@@ -1,10 +1,10 @@
 import torch
-from DataLoader import TrainSet
-import get_image
-from LossFunction import FCOSloss
+from fcos.DataLoader import TrainSet
+import fcos.get_image
+from fcos.LossFunction import FCOSloss
 from net import FCOS
 import torch.utils.data as Data
-from mAP import returnMAP
+from fcos.mAP import returnMAP
 
 # torch.manual_seed(1)	#reproducible
 

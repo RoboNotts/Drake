@@ -2,11 +2,11 @@ import os
 import cv2
 import numpy as np
 import xml.dom.minidom
-from TorchDataAugmentation import preprocessing
+from fcos.TorchDataAugmentation import preprocessing
 import torch
 
 # load class list
-fh = open('./classes.txt', 'r')
+fh = open('./src/Drake/src/fcos/classes.txt', 'r')
 # obtain class list
 label_list = []
 for line in fh:
