@@ -17,7 +17,7 @@ class Drake:
     def __init__(self, /, size, confidence, iou, classes, publishImage, image):
         # # Initialise the Model
 
-        model = torch.load('./models/net50.pkl') # Will currently only be object recognition model
+        model = torch.load('.fcos/models/net50.pkl') # Will currently only be object recognition model
         model.conf = confidence  # confidence threshold (0-1)
         model.iou = iou  # NMS Intersectuib over Union threshold (0-1)
         model.classes = classes if len(
