@@ -71,7 +71,7 @@ class Drake:
         frame = image.copy()
         frame = cv2.resize(frame, (480, 360))
         for box in boxes:
-            if box[1] > 0.4:
+            if(True): #box[1] > 0.4:
                 xmin = box[2]
                 ymin = box[3]
                 xmax = box[4]
