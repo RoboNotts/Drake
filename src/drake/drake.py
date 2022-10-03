@@ -68,19 +68,19 @@ class Drake:
         self._publishBoxes(boxes)
 
         # This code will output the image with the boxes. To be implemented
-        # frame = image.copy()
-        # frame = cv2.resize(frame, (480, 360))
-        # for box in boxes:
-        #     if box[1] > 0.4:
-        #         xmin = box[2]
-        #         ymin = box[3]
-        #         xmax = box[4]
-        #         ymax = box[5]
-        #         # draw rectangle
-        #         frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-        #         frame = cv2.putText(frame, str(box[0]), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-        #                             (255, 40, 0), 2)
-        # cv2.imwrite('object.png', frame)
+        frame = image.copy()
+        frame = cv2.resize(frame, (480, 360))
+        for box in boxes:
+            if box[1] > 0.4:
+                xmin = box[2]
+                ymin = box[3]
+                xmax = box[4]
+                ymax = box[5]
+                # draw rectangle
+                frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
+                frame = cv2.putText(frame, str(box[0]), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                    (255, 40, 0), 2)
+        self.publishers["image_with_bounding_boxes"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
 
     # Publishes the bounding box data. If wanted, also publishes the image with added bounding boxes
     def _publishBoxes(self, boxes):
