@@ -10,6 +10,30 @@ import fcos.net as net
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
 
+classnames = [
+    "cup",
+    "plate",
+    "bowl",
+    "towel",
+    "shoes",
+    "sponge",
+    "bottle",
+    "toothbrush",
+    "toothpaste",
+    "tray",
+    "sweater",
+    "cellphone",
+    "banana",
+    "medicine bottle",
+    "reading glasses",
+    "flashlight",
+    "pill box",
+    "book",
+    "knife",
+    "cellphone charger",
+    "shopping bag",
+    "keyboard"
+]
 
 class Drake:
     class SizeNameException(Exception):
@@ -78,7 +102,7 @@ class Drake:
                 ymax = box[5]
                 # draw rectangle
                 frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-                frame = cv2.putText(frame, str(box[0]), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                frame = cv2.putText(frame, classnames[box[0]], (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                     (255, 40, 0), 2)
         self.publishers["image_with_bounding_boxes"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
 
