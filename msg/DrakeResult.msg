@@ -1,4 +1,4 @@
-int32 class
+int32 object_class
 float64 confidence
 float64 xmin
 float64 ymin
