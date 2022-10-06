@@ -95,15 +95,14 @@ class Drake:
         frame = image.copy()
         frame = cv2.resize(frame, (480, 360))
         for box in boxes:
-            if(True): #box[1] > 0.4:
-                xmin = box[2]
-                ymin = box[3]
-                xmax = box[4]
-                ymax = box[5]
-                # draw rectangle
-                frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-                frame = cv2.putText(frame, classnames[box[0]], (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                    (255, 40, 0), 2)
+            xmin = box[2]
+            ymin = box[3]
+            xmax = box[4]
+            ymax = box[5]
+            # draw rectangle
+            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
+            frame = cv2.putText(frame, classnames[box[0]], (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (255, 40, 0), 2)
         self.publishers["image_with_bounding_boxes"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
 
     # Publishes the bounding box data. If wanted, also publishes the image with added bounding boxes

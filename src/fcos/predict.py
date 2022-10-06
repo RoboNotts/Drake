@@ -8,8 +8,8 @@ import fcos.get_image
 
 
 def prediction(confs, locs, centers, row, col):
-    iou_lime = 0.5  # threshold for iou
-    cls_lime = 0.2  # threshold for confidence
+    iou_lime = 0.4  # threshold for iou
+    cls_lime = 0.3  # threshold for confidence
     # obtain the size of all the feature maps
     map_sizes = []
     for map_num in range(len(confs)):
