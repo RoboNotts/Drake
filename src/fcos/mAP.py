@@ -2,14 +2,14 @@ import os
 import xml.dom.minidom
 import cv2
 import torch
-from fcos.predict import prediction
+from predict import prediction
 from tqdm import tqdm
-import fcos.get_image
+import get_image
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
-import fcos.map_function as mf
-from fcos.DataLoader import ValSet
+import map_function as mf
+from DataLoader import FolderData
 import torch.utils.data as Data
 
 
@@ -89,69 +89,29 @@ def returnMAP(net):
     net.cuda()
     net.eval()
     # load test set
-    test_set = ValSet()
+    test_set = FolderData("./DataSet/labels/val/")
     loader = Data.DataLoader(
         dataset=test_set,  # torch TensorDataset format
         batch_size=1,  # mini batch size
         shuffle=True,
         num_workers=2,
     )
-    # initialize map curve
-    mAP_cup = []
-    mAP_plate = []
-    mAP_bowl = []
-    mAP_towel = []
-    mAP_shoes = []
-    mAP_sponge = []
-    mAP_bottle = []
-    mAP_toothbrush = []
-    mAP_toothpaste = []
-    mAP_tray = []
-    mAP_sweater = []
-    mAP_cellphone = []
-    mAP_banana = []
-    mAP_medicine_bottle = []
-    mAP_reading_glasses = []
-    mAP_flashlight = []
-    mAP_pill_box = []
-    mAP_book = []
-    mAP_knife = []
-    mAP_cellphone_charger = []
-    mAP_shopping_bag = []
-    mAP_keyboard = []
-
-    mAP_all = [mAP_cup, mAP_plate, mAP_bowl, mAP_towel, mAP_shoes, mAP_sponge, mAP_bottle, mAP_toothbrush,
-               mAP_toothpaste, mAP_tray, mAP_sweater, mAP_cellphone, mAP_banana, mAP_medicine_bottle,
-               mAP_reading_glasses, mAP_flashlight, mAP_pill_box, mAP_book, mAP_knife, mAP_cellphone_charger,
-               mAP_shopping_bag,
-               mAP_keyboard]
-    # initialize the total of gt of each class
-    gt_cup = 0
-    gt_plate = 0
-    gt_bowl = 0
-    gt_towel = 0
-    gt_shoes = 0
-    gt_sponge = 0
-    gt_bottle = 0
-    gt_toothbrush = 0
-    gt_toothpaste = 0
-    gt_tray = 0
-    gt_sweater = 0
-    gt_cellphone = 0
-    gt_banana = 0
-    gt_medicine_bottle = 0
-    gt_reading_glasses = 0
-    gt_flashlight = 0
-    gt_pill_box = 0
-    gt_book = 0
-    gt_knife = 0
-    gt_cellphone_charger = 0
-    gt_shopping_bag = 0
-    gt_keyboard = 0
-
-    gt_all = [gt_cup, gt_plate, gt_bowl, gt_towel, gt_shoes, gt_sponge, gt_bottle, gt_toothbrush, gt_toothpaste,
-              gt_tray, gt_sweater, gt_cellphone, gt_banana, gt_medicine_bottle, gt_reading_glasses, gt_flashlight,
-              gt_pill_box, gt_book, gt_knife, gt_cellphone_charger, gt_shopping_bag, gt_keyboard]
+    
+    # load class list
+    try:
+        with open('./classes.txt', 'r') as f:
+            # obtain class list
+            label_list = f.read().splitlines()
+    except FileNotFoundError:
+        print("classes.txt file was not found...")
+        exit(0)  
+    
+    mAP_all = []
+    gt_all  = []
+    for i in classes:
+        mAP_all.append([])
+        gt_all.append(0)
+    
     # traverse validation set
     for step, label_paths in tqdm(enumerate(loader)):
         # get an image

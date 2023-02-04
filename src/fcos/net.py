@@ -9,9 +9,9 @@ import math
 
 class FCOS(nn.Module):
     def __init__(self):
-        super(FCOS, self).__init__()
+        super().__init__()
         model = models.resnet50(pretrained=False)
-        pre = torch.load('./src/Drake/src/fcos/resnet50-19c8e357.pth')
+        pre = torch.load('resnet50-19c8e357.pth')
         model.load_state_dict(pre)
 
         ########## stage1 ##########

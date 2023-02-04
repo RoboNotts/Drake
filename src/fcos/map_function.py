@@ -2,14 +2,8 @@ import math
 
 
 def compute_iou(rect1, rect2):
-    """
-    calculate iou between two bounding boxes
-    :param：
-        rect1:[left1, top1, right1, bottom1]
-        rect2:[left2, top2, right2, bottom2]
-    return：
-        iou
-    """
+    # calculate iou between two bounding boxes
+
     # obtain the index of boundaries
     left1 = rect1[0]
     top1 = rect1[1]
@@ -40,16 +34,15 @@ def compute_iou(rect1, rect2):
 
 
 class Pixel:
-    """
-    class for a pixel on the feature map
-    """
+    #class for a pixel on the feature map
+    
 
     def __init__(self, num, stride, i, j, thresholds):
         self.num = num  # the num of the feature map where the pixel is located
         self.stride = stride
         self.status = 0  # marker to show if the pixel is a positive sample
         self.area = 0  # the area of the bounding box matching the pixel
-        self.tag = [-1]  # the label of the boundnig box
+        self.tag = [-1]  # the label of the bounding box
         self.i = i  # the horizontal index of the pixel on the feature map（start from 0）
         self.j = j  # the vertical index of the pixel on the feature map（start from 0））
         self.thresholds = thresholds  # the threshold for multiscale training
@@ -59,11 +52,8 @@ class Pixel:
         self.y = int(stride / 2) + i * stride
 
     def judge_pos(self, tags):
-        """
-        judge if the pixel is a positiev sample
-        :param tags: all labels
-        :return:
-        """
+        #judge if the pixel is a positive sample
+        
         for tag in tags:
             xmin = tag[1]
             ymin = tag[2]
@@ -99,9 +89,7 @@ class Pixel:
 
 
 class Feature_map:
-    """
-    class for a feature map
-    """
+    # class for feature map
 
     def __init__(self, num, row, col, stride, thresholds):
         self.num = num  # the num of the feature map
@@ -117,9 +105,7 @@ class Feature_map:
 
 
 class Map_master:
-    """
-    a class for generating and managing all faeture maps
-    """
+    # class for generating and managing all feature maps
 
     def __init__(self, sizes):
         self.feature_maps = []  # a list contaiinng all feature maps

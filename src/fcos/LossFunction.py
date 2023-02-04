@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import fcos.map_function as mf
+import map_function as mf
 
 
 class IOUloss(nn.Module):
@@ -8,14 +8,8 @@ class IOUloss(nn.Module):
         super(IOUloss, self).__init__()
 
     def forward(self, rect1, rect2):
-        """
-        calculate iou between two bounding boxes
-        :param：
-            rect1:[left1, top1, right1, bottom1]
-            rect2:[left2, top2, right2, bottom2]
-        return：
-            iou
-        """
+        #calculate iou between two bounding boxes
+        
         # obtain the index of boundaries
         left1 = rect1[0]
         top1 = rect1[1]
@@ -49,7 +43,7 @@ class IOUloss(nn.Module):
 
 class FCOSloss(nn.Module):
     def __init__(self):
-        super(FCOSloss, self).__init__()
+        super().__init__()
         self.alpha = 0.25
         self.gamma = 2
 

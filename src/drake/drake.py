@@ -10,40 +10,19 @@ import fcos.net as net
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
 
-classnames = [
-    "cup",
-    "plate",
-    "bowl",
-    "towel",
-    "shoes",
-    "sponge",
-    "bottle",
-    "toothbrush",
-    "toothpaste",
-    "tray",
-    "sweater",
-    "cellphone",
-    "banana",
-    "medicine bottle",
-    "reading glasses",
-    "flashlight",
-    "pill box",
-    "book",
-    "knife",
-    "cellphone charger",
-    "shopping bag",
-    "keyboard"
-]
+
+with open('C:/src/Drake/src/fcos/classes.txt') as f:
+    classnames = f.read().splitlines()
 
 class Drake:
     class SizeNameException(Exception):
         def __init__(self, *args: object) -> None:
             super().__init__("Size name is invalid!", *args)
 
-    def __init__(self, classes, image):
+    def __init__(self, classes, image, path='./src/Drake/src/fcos/module/net178_params.pkl'):
         # # Initialise the Model
         model = net.FCOS()
-        model.load_state_dict(torch.load('./src/Drake/src/fcos/module/net178_params.pkl')) # Will currently only be object recognition model
+        model.load_state_dict(torch.load(path)) # Will currently only be object recognition model
         model.classes = classes if len(
             classes) > 0 else None  # (optional list) filter by class, i.e. = [0, 15, 16] for persons, cats and dogs
 
@@ -76,7 +55,7 @@ class Drake:
         data = self.currentImage
         if (data is None): 
             # No image.
-            rospy.logwarn("No Image to publish...")
+            rospy.logwarn("Waiting for image...")
             return
         
         # Get Image and pre-process
@@ -91,7 +70,6 @@ class Drake:
         # Publish the result
         self._publishBoxes(boxes)
 
-        # This code will output the image with the boxes. To be implemented
         frame = image.copy()
         frame = cv2.resize(frame, (480, 360))
         for box in boxes:
@@ -113,7 +91,6 @@ class Drake:
 
         self.publishers["bounding_boxes"].publish(output)
         
-    
     def main(*args, rate, **kwargs):
         rospy.init_node('drake') # Only one 'drake' should ever be runing, so I'm getting rid of the anonymous
         d = Drake(*args, **kwargs)

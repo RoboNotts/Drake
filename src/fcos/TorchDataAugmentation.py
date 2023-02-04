@@ -3,7 +3,7 @@ import torch
 
 
 def preprocessing(image, resize=True, norm=True, size=[360, 480]):
-    """preprocessing the image before sending it to the neural network"""
+    #preprocessing the image before sending it to the neural network
     if resize:
         image = transforms.functional.resize(image, size)
     transform = transforms.ConvertImageDtype(torch.float32)
@@ -14,7 +14,7 @@ def preprocessing(image, resize=True, norm=True, size=[360, 480]):
 
 
 def normalization(image):
-    """normalization"""
+    #normalization
     transform = transforms.Normalize(
         mean=torch.tensor([0.485, 0.456, 0.406]),
         std=torch.tensor([0.229, 0.224, 0.225]))

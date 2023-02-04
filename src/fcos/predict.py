@@ -1,15 +1,24 @@
 import torch
 import xml.dom.minidom
 import cv2
-import fcos.map_function as mf
-from fcos.DataLoader import TestSet, TrainSet
+import map_function as mf
+from DataLoader import FolderData
 import torch.utils.data as Data
-import fcos.get_image
+import get_image
 
 
 def prediction(confs, locs, centers, row, col):
-    iou_lime = 0.4  # threshold for iou
-    cls_lime = 0.3  # threshold for confidence
+    # Find Classes.
+    try:
+        with open('./classes.txt', 'r') as f:
+            classes = f.read().splitlines()
+    except FileNotFoundError:
+        print("classes.txt file was not found...")
+        exit(0)   
+        
+    iou_lime = 0.5  # threshold for iou
+    cls_lime = 0.2  # threshold for confidence
+    
     # obtain the size of all the feature maps
     map_sizes = []
     for map_num in range(len(confs)):
@@ -19,34 +28,12 @@ def prediction(confs, locs, centers, row, col):
         map_sizes.append([H, W])
     # initialize a manager for feature maps
     map_master = mf.Map_master(map_sizes)
+    
     # initialize a list for storing predicted bounding boxes of different classes
-    cup = []
-    plate = []
-    bowl = []
-    towel = []
-    shoes = []
-    sponge = []
-    bottle = []
-    toothbrush = []
-    toothpaste = []
-    tray = []
-    sweater = []
-    cellphone = []
-    banana = []
-    medicine_bottle = []
-    reading_glasses = []
-    flashlight = []
-    pill_box = []
-    book = []
-    knife = []
-    cellphone_charger = []
-    shopping_bag = []
-    keyboard = []
-    # initialize a list containing all the bounding boxes before NMS
-    GTmaster = [cup, plate, bowl, towel, shoes, sponge, bottle, toothbrush, toothpaste,
-                tray, sweater, cellphone, banana, medicine_bottle,
-                reading_glasses, flashlight, pill_box, book, knife,
-                cellphone_charger, shopping_bag, keyboard]
+    GTmaster = []
+    for i in classes:
+        GTmaster.append([])
+    
     # traverse all feature maps
     for feature_num in range(len(confs)):
         conf = confs[feature_num].detach().cpu()
@@ -66,12 +53,10 @@ def prediction(confs, locs, centers, row, col):
                            loc[0, 1, i, j], loc[0, 2, i, j], loc[0, 3, i, j]]
                     box = map_master.decode_coordinate(box, row, col)
                     GTmaster[indexes[i][j]].append(box)
-    # initialize an empty list for returning the final detected bounding boxes after NMS
+    # initialize a empty list for returning the final detected bounding boxes after NMS
     boxes = []
     # non maximum suppression (NMS)
     for GT in GTmaster:
-        if len(GT) == 0:
-            continue
         while len(GT) > 0:
             max_obj = []
             for obj in GT[:]:
@@ -99,28 +84,24 @@ def prediction(confs, locs, centers, row, col):
 if __name__ == '__main__':
     # load class list
     try:
-        fh = open('./classes.txt', 'r')
+        with open('./classes.txt', 'r') as f:
+            classes = f.read().splitlines()
     except FileNotFoundError:
         print("classes.txt file was not found...")
         exit(0)
         
-    # obtain class list
-    classes = []
-    for line in fh:
-        line = line.strip('\n')
-        classes.append(line)
-    fh.close()
     # load the model
-    net = torch.load('./module/net178.pkl')
+    net = torch.load('./module/net154.pkl')
     net.eval()
     # load test set
-    test_set = TestSet()
+    test_set = FolderData("./DataSet/labels/test/")
     loader = Data.DataLoader(
         dataset=test_set,  # torch TensorDataset format
         batch_size=1,  # mini batch size
-        shuffle=True,  # shuffle the dataset
+        shuffle=True,  # shuffle the daatset
         num_workers=2,  # read data by multi threads
     )
+    
     # detect
     for step, label_paths in enumerate(loader):
         # read one image
@@ -135,13 +116,12 @@ if __name__ == '__main__':
         pathname = "./" + path.childNodes[0].data
         # read the image
         frame = cv2.imread(pathname)
-        frame = cv2.resize(frame, (480, 360))
+
         row = frame.shape[0]
         col = frame.shape[1]
         torch_images, labels = get_image.get_label(label_paths)
-        with torch.no_grad():
-            # predict
-            confs, locs, centers = net(torch_images)
+        # predict
+        confs, locs, centers = net(torch_images)
         boxes = prediction(confs, locs, centers, row, col)
         for box in boxes:
             xmin = box[2]
@@ -149,9 +129,10 @@ if __name__ == '__main__':
             xmax = box[4]
             ymax = box[5]
             # draw rectangle
-            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 0), 3)
-            frame = cv2.putText(frame, classes[box[0]], (xmin, ymin), cv2.FONT_HERSHEY_COMPLEX, 1.0,
-                                (255, 0, 0), 2)
-        cv2.imshow('object detector', frame)
+            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (200, 0, 20), 3)
+            frame = cv2.putText(frame, classes[box[0]] + " | " + round(box[1], 2), (xmin - 5, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 1.0,
+                                (200, 0, 20), 1)
+            
+        cv2.imshow('detections!', frame)
         if cv2.waitKey(0) & 0xFF == 27:
             break

@@ -2,18 +2,17 @@ import os
 import cv2
 import numpy as np
 import xml.dom.minidom
-from fcos.TorchDataAugmentation import preprocessing
+from TorchDataAugmentation import preprocessing
 import torch
 
 # load class list
-fh = open('./src/Drake/src/fcos/classes.txt', 'r')
-# obtain class list
-label_list = []
-for line in fh:
-    line = line.strip('\n')
-    label_list.append(line)
-fh.close()
-
+try:
+    with open('./classes.txt', 'r') as f:
+        # obtain class list
+        label_list = f.read().splitlines()
+except FileNotFoundError:
+    print("classes.txt file was not found...")
+    exit(0)  
 
 def get_label(label_ls):
     # initialize a list to save input images as torch tensors
