@@ -92,6 +92,7 @@ if __name__ == '__main__':
         print('Epoch:', epoch, '|mAP:%.4f' % mAP)
         if mAP >= max_mAP:
             net.cpu()
-            torch.save(net, './module/net' + str(epoch) + '.pkl')
+            #torch.save(net, './module/net' + str(epoch) + '.pkl')
+            torch.save(net, './module/net' + "best" + '.pkl')
             net.to(train_device)
             map_mAP = mAP
