@@ -175,6 +175,7 @@ cython_debug/
 runs/
 tests/
 DataSet/
+module/
 
 # Ignore Catkin Things
 .catkin_workspace

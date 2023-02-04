@@ -4,12 +4,13 @@ import get_image
 from LossFunction import FCOSloss
 from net import FCOS
 import torch.utils.data as Data
+import os
 from mAP import returnMAP
 
 # torch.manual_seed(1)	#reproducible
 if __name__ == '__main__':
     # hyper parameters
-    BATCH_SIZE = 6
+    BATCH_SIZE = 1
     EPOCH = 1000
     LR = 0.0001  # learning rate
     FT_LR = 0.000001  # learning rate for frozen parameters
@@ -67,6 +68,9 @@ if __name__ == '__main__':
     # initialize maximum mAP
     max_mAP = 0
     # training
+    if not os.path.exists("module"):
+        os.makedirs("module")
+    
     for epoch in range(start, EPOCH):
         # release a mini-batch data
         for step, image_paths in enumerate(loader):

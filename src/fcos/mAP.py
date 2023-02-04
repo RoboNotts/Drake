@@ -101,7 +101,7 @@ def returnMAP(net):
     try:
         with open('./classes.txt', 'r') as f:
             # obtain class list
-            label_list = f.read().splitlines()
+            classes = f.read().splitlines()
     except FileNotFoundError:
         print("classes.txt file was not found...")
         exit(0)  

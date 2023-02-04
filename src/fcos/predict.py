@@ -91,7 +91,7 @@ if __name__ == '__main__':
         exit(0)
         
     # load the model
-    net = torch.load('./module/net154.pkl')
+    net = torch.load('./module/net0.pkl')
     net.eval()
     # load test set
     test_set = FolderData("./DataSet/labels/test/")
@@ -129,9 +129,9 @@ if __name__ == '__main__':
             xmax = box[4]
             ymax = box[5]
             # draw rectangle
-            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (200, 0, 20), 3)
-            frame = cv2.putText(frame, classes[box[0]] + " | " + round(box[1], 2), (xmin - 5, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 1.0,
-                                (200, 0, 20), 1)
+            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 40, 255), 2)
+            frame = cv2.putText(frame, classes[box[0]] + ":" + str(round(box[1].item(), 2)), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (0, 40, 255), 1)
             
         cv2.imshow('detections!', frame)
         if cv2.waitKey(0) & 0xFF == 27:
