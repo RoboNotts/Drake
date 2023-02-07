@@ -1,20 +1,18 @@
 {
-    "image": "registry.hub.docker.com/library/ros:noetic-robot-buster",
-    "workspaceFolder":"/home/robonotts/",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/home/robonotts/src/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-    "onCreateCommand":"bash -c \". /ros_entrypoint.sh && apt-get update && apt-get install -y --no-install-recommends python3-pip && rosdep install --from-paths src --ignore-src -y && catkin_make\"",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "USERNAME":"Aubrey"
+        },
+        "target": "devcontainer"
+    },
+    "postCreateCommand": "bash -c \". /ros_entrypoint.sh && rosdep update && rosdep install --from-paths src --ignore-src -y && cd /home/Aubrey/drake_ws && catkin_make\"",
+    "workspaceFolder":"/home/Aubrey/drake_ws",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/Aubrey/drake_ws/src/${localWorkspaceFolderBasename},type=bind,consistency=cached", 
     "extensions": [
 		"ms-python.python",
 		"ms-iot.vscode-ros"
 	],
-    "customizations": {
-        "vscode": {
-            "settings": {
-                "python.analysis.extraPaths": [
-                    "/home/robonotts/devel/lib/python3/dist-packages",
-                    "/opt/ros/noetic/lib/python3/dist-packages"
-                ]
-            }
-        }
-    }
+    "remoteUser": "Aubrey",
+    "containerUser": "Aubrey"
 }
