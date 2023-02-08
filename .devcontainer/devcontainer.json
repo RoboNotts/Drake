@@ -8,11 +8,13 @@
     },
     "postCreateCommand": "bash -c \". /ros_entrypoint.sh && rosdep update && rosdep install --from-paths src --ignore-src -y && cd /home/Aubrey/drake_ws && catkin_make\"",
     "workspaceFolder":"/home/Aubrey/drake_ws",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/home/Aubrey/drake_ws/src/${localWorkspaceFolderBasename},type=bind,consistency=cached", 
-    "extensions": [
-		"ms-python.python",
-		"ms-iot.vscode-ros"
-	],
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/Aubrey/drake_ws/src/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "customizations": {
+        "extensions": [
+            "ms-python.python",
+            "ms-iot.vscode-ros"
+        ]
+    },
     "remoteUser": "Aubrey",
     "containerUser": "Aubrey"
 }
