@@ -9,10 +9,10 @@ from fcos.TorchDataAugmentation import preprocessing
 import fcos.net as net
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
+from importlib.resources import read_text
+import fcos
 
-
-with open('C:/src/Drake/src/fcos/classes.txt') as f:
-    classnames = f.read().splitlines()
+classnames = read_text(fcos, "classes.txt").splitlines()
 
 class Drake:
     class SizeNameException(Exception):

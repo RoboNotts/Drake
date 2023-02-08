@@ -1,17 +1,20 @@
+from importlib.resources import read_text, open_binary
 import torch
 import xml.dom.minidom
 import cv2
-import map_function as mf
-from DataLoader import FolderData
+import fcos.map_function as mf
+from fcos.DataLoader import FolderData
 import torch.utils.data as Data
-import get_image
-
+import fcos.get_image as get_image
+import fcos.module
+import fcos.net
+from fcos.net import FCOS
 
 def prediction(confs, locs, centers, row, col):
     # Find Classes.
     try:
-        with open('./classes.txt', 'r') as f:
-            classes = f.read().splitlines()
+        f = read_text(__package__, 'classes.txt')
+        classes = f.splitlines()
     except FileNotFoundError:
         print("classes.txt file was not found...")
         exit(0)   
@@ -80,21 +83,22 @@ def prediction(confs, locs, centers, row, col):
                         GT.remove(obj)
     return boxes
 
-
-if __name__ == '__main__':
+def main():
     # load class list
-    try:
-        with open('./classes.txt', 'r') as f:
-            classes = f.read().splitlines()
-    except FileNotFoundError:
-        print("classes.txt file was not found...")
-        exit(0)
+    print("balls")
+
+    f = read_text('fcos', 'classes.txt')
+    
+    classes = f.splitlines()
+    print("balls")
         
     # load the model
-    net = torch.load('./module/net0.pkl')
+    with open_binary(fcos.module, 'net0.unpkl') as f:
+        net = FCOS()
+        net.load_state_dict(torch.load(f))
     net.eval()
     # load test set
-    test_set = FolderData("./DataSet/labels/test/")
+    test_set = FolderData("./src/Drake/src/fcos/DataSet/labels/test/")
     loader = Data.DataLoader(
         dataset=test_set,  # torch TensorDataset format
         batch_size=1,  # mini batch size
@@ -113,7 +117,8 @@ if __name__ == '__main__':
         objects = root.getElementsByTagName("object")
         path = root.getElementsByTagName('path')[0]
         # obtain the path of the image
-        pathname = "./" + path.childNodes[0].data
+        pathname = "./src/Drake/src/fcos/" + path.childNodes[0].data
+        print(pathname)
         # read the image
         frame = cv2.imread(pathname)
 
@@ -136,3 +141,7 @@ if __name__ == '__main__':
         cv2.imshow('detections!', frame)
         if cv2.waitKey(0) & 0xFF == 27:
             break
+
+
+if __name__ == '__main__':
+    main()
