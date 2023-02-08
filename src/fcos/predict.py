@@ -138,9 +138,7 @@ def main():
             frame = cv2.putText(frame, classes[box[0]] + ":" + str(round(box[1].item(), 2)), (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (0, 40, 255), 1)
             
-        cv2.imshow('detections!', frame)
-        if cv2.waitKey(0) & 0xFF == 27:
-            break
+        cv2.imwrite(f'detections/detections_{step}.png', frame)
 
 
 if __name__ == '__main__':
