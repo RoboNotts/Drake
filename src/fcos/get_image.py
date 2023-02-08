@@ -2,14 +2,14 @@ import os
 import cv2
 import numpy as np
 import xml.dom.minidom
-from TorchDataAugmentation import preprocessing
+from fcos.TorchDataAugmentation import preprocessing
 import torch
+from importlib.resources import read_text
 
 # load class list
 try:
-    with open('./classes.txt', 'r') as f:
-        # obtain class list
-        label_list = f.read().splitlines()
+    # obtain class list
+    label_list = read_text(__package__, 'classes.txt').splitlines()
 except FileNotFoundError:
     print("classes.txt file was not found...")
     exit(0)  
@@ -26,7 +26,7 @@ def get_label(label_ls):
         root = dom.documentElement
         objects = root.getElementsByTagName("object")
         path = root.getElementsByTagName('path')[0]
-        pathname = "./" + path.childNodes[0].data
+        pathname = "./src/Drake/src/fcos/" + path.childNodes[0].data
         image = cv2.imread(pathname)
         # obtain image size
         row = image.shape[0]

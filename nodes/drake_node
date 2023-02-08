@@ -2,6 +2,7 @@
 
 import argparse
 from drake import Drake
+import fcos
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv5 and publishes the output (and optionally bounding boxed images) to ROS.")
@@ -11,5 +12,5 @@ if __name__=="__main__":
     parser.add_argument('classes', nargs='*', type=float, default=None, help="The classes to filter")
 
     args = parser.parse_args()
-
-    Drake.main(**vars(args))
+    fcos.predict.main()
+    #Drake.main(**vars(args))

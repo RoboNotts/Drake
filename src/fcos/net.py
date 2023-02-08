@@ -5,13 +5,14 @@ import torch.nn.functional as F
 # from torchsummary import summary
 import numpy as np
 import math
-
+from importlib.resources import open_binary
 
 class FCOS(nn.Module):
     def __init__(self):
         super().__init__()
         model = models.resnet50(pretrained=False)
-        pre = torch.load('resnet50-19c8e357.pth')
+        with open_binary(__package__, 'resnet50-19c8e357.pth') as f:
+            pre = torch.load(f)
         model.load_state_dict(pre)
 
         ########## stage1 ##########
