@@ -2,15 +2,16 @@
 
 import argparse
 from drake import Drake
-import fcos
+import pathlib
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv5 and publishes the output (and optionally bounding boxed images) to ROS.")
 
     parser.add_argument('--image', nargs='?', type=str, default="cv_camera/image_raw", help="The ROS topic which has the image input")
     parser.add_argument('--rate', nargs='?', type=int, default=60, help="The maximum rate of detection from this node")
-    parser.add_argument('classes', nargs='*', type=float, default=None, help="The classes to filter")
+    parser.add_argument('modelfile', type=pathlib.Path, default=None, help="The model file")
+    parser.add_argument('weightsfile', type=pathlib.Path, default=None, help="The model weights")
+    parser.add_argument('classfile', type=pathlib.Path, default=None, help="The classes file")
 
     args = parser.parse_args()
-    fcos.predict.main()
-    #Drake.main(**vars(args))
+    Drake.main(**vars(args))
