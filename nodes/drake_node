@@ -10,7 +10,6 @@ if __name__=="__main__":
     parser.add_argument('--image', nargs='?', type=str, default="cv_camera/image_raw", help="The ROS topic which has the image input")
     parser.add_argument('--rate', nargs='?', type=int, default=60, help="The maximum rate of detection from this node")
     parser.add_argument('modelfile', type=pathlib.Path, default=None, help="The model file")
-    parser.add_argument('weightsfile', type=pathlib.Path, default=None, help="The model weights")
     parser.add_argument('classfile', type=pathlib.Path, default=None, help="The classes file")
 
     args = parser.parse_args()

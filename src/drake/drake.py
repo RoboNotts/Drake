@@ -16,7 +16,7 @@ class Drake:
         def __init__(self, *args: object) -> None:
             super().__init__("Size name is invalid!", *args)
 
-    def __init__(self, modelfile, weightsfile, classfile, image):
+    def __init__(self, modelfile, classfile, image):
         # # Initialise the Model
         # load class list
     
@@ -62,20 +62,18 @@ class Drake:
         image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
         
         # Use YOLO model to predict
-        boxes = self.model.predict(image).boxes.xyxy
+        prediction = self.model.predict(image, conf=0.25)[0]
+        boxes = prediction.boxes.xyxy
 
         # Publish the result
-        self._publishBoxes(boxes)
+        self._publishBoxes([[_class, conf, *box] for _class, conf, box in zip(prediction.boxes.cls, prediction.boxes.conf, prediction.boxes.xyxy)])
 
         frame = image.copy()
-        for box in boxes:
-            xmin = box[2]
-            ymin = box[3]
-            xmax = box[4]
-            ymax = box[5]
+        for cls, box in zip(prediction.boxes.cls, boxes):
+            xmin, ymin, xmax, ymax = tuple(int(x) for x in box)
             # draw rectangle
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-            frame = cv2.putText(frame, self.classes[box[0]], (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+            frame = cv2.putText(frame, self.classes[int(cls)], (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (255, 40, 0), 2)
         self.publishers["image_with_bounding_boxes"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
         cv2.imwrite("test.jpg", frame)
