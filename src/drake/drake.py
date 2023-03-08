@@ -5,10 +5,11 @@ import cv_bridge
 import cv2
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
+from ultralytics import YOLO
 from linnaeus.core.loaders import ClassLoader
-from linnaeus.core.models import FCOS
-from linnaeus.core.mAP.functions import fcos_to_boxes
-from linnaeus.core.data_augmentation import preprocessing
+# from linnaeus.core.models import FCOS
+# from linnaeus.core.mAP.functions import fcos_to_boxes
+# from linnaeus.core.data_augmentation import preprocessing
 
 class Drake:
     class SizeNameException(Exception):
@@ -20,13 +21,8 @@ class Drake:
         # load class list
     
         # load the model
-        model = FCOS(torch.load(modelfile))
+        model = YOLO(modelfile)
         self.classes = ClassLoader(classfile)
-            
-        model.load_state_dict(torch.load(weightsfile))
-        train_device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model.to(train_device)
-        model.eval()
 
         self.model = model
 
@@ -64,18 +60,14 @@ class Drake:
         
         # Get Image and pre-process
         image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
-        torch_image = torch.from_numpy(np.transpose(image, (2,0,1)))
-        torch_image = preprocessing(torch_image).unsqueeze(0)
-        # Use FCOS model to predict
-        dimensions = image.shape
-        confs, locs, centers = self.model(torch_image)
-        boxes = fcos_to_boxes(self.classes, confs, locs, centers, dimensions[0], dimensions[1])
         
+        # Use YOLO model to predict
+        boxes = self.model.predict(image).boxes.xyxy
+
         # Publish the result
         self._publishBoxes(boxes)
 
         frame = image.copy()
-        frame = cv2.resize(frame, (480, 360))
         for box in boxes:
             xmin = box[2]
             ymin = box[3]
