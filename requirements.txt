@@ -1,6 +1,4 @@
-torch~=1.11.0
-torchvision~=0.12.0
-intel-extension-for-pytorch~=1.11.200
+python3-ultralytics-pip
 opencv-python~=4.5.5
 pandas~=1.4.2
 PyYAML~=6.0
