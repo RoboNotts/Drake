@@ -69,8 +69,8 @@
   <exec_depend>python3-opencv</exec_depend>
   <build_export_depend>python-yaml</build_export_depend>
   <exec_depend>python-yaml</exec_depend>
-  <build_export_depend>python-linnaeus</build_export_depend>
-  <exec_depend>python-linnaeus</exec_depend>
+  <!-- <build_export_depend>python-linnaeus</build_export_depend>
+  <exec_depend>python-linnaeus</exec_depend> -->
   <build_export_depend>python3-ultralytics-pip</build_export_depend>
   <exec_depend>python3-ultralytics-pip</exec_depend>
 
