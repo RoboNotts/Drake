@@ -65,10 +65,8 @@
   <!-- Python Dependencies -->
   <build_export_depend>python-pytorch-pip</build_export_depend>
   <exec_depend>python-pytorch-pip</exec_depend>
-  <build_export_depend>python-opencv</build_export_depend>
-  <exec_depend>python-opencv</exec_depend>
-  <build_export_depend>python-pandas</build_export_depend>
-  <exec_depend>python-pandas</exec_depend>
+  <build_export_depend>python3-opencv</build_export_depend>
+  <exec_depend>python3-opencv</exec_depend>
   <build_export_depend>python-yaml</build_export_depend>
   <exec_depend>python-yaml</exec_depend>
   <build_export_depend>python-linnaeus</build_export_depend>
