@@ -1,2 +1,2 @@
-int32 resultsCount
+int32 results_count
 DrakeResult[] results

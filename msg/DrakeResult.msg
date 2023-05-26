@@ -1,6 +1,10 @@
 int32 object_class
+string object_class_name
 float64 confidence
 float64 xmin
 float64 ymin
 float64 xmax
 float64 ymax
+float64 xcentroid
+float64 ycentroid
+float64 zcentroid
