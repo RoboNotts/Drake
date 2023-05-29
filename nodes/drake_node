@@ -4,9 +4,6 @@ import argparse
 from drake.drake import Drake
 
 if __name__=="__main__":
-    import os
-    import sys
-    # Output working directory
     parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv8 and Segment Anything and publishes the output (and optionally decorated images) to ROS.")
 
     # (self, image_topic, depth_topic, rate, *args, **kwargs)
