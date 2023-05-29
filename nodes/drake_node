@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 
 import argparse
-from drake import Drake
-import pathlib
+from drake.drake import Drake
 
 if __name__=="__main__":
-    parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv5 and publishes the output (and optionally bounding boxed images) to ROS.")
+    import os
+    import sys
+    # Output working directory
+    parser = argparse.ArgumentParser(description="Drake runs a version of YOLOv8 and Segment Anything and publishes the output (and optionally decorated images) to ROS.")
 
-    parser.add_argument('--image', nargs='?', type=str, default="cv_camera/image_raw", help="The ROS topic which has the image input")
-    parser.add_argument('--rate', nargs='?', type=int, default=60, help="The maximum rate of detection from this node")
-    parser.add_argument('modelfile', type=pathlib.Path, default=None, help="The model file")
-    parser.add_argument('classfile', type=pathlib.Path, default=None, help="The classes file")
+    # (self, image_topic, depth_topic, rate, *args, **kwargs)
+    parser.add_argument("--name", type=str, default="drake", help="The name of this node and prefix for drake output topics")
+    parser.add_argument("--image-topic", type=str, default="/camera/color/image_raw", help="The topic to subscribe to for images.")
+    parser.add_argument("--depth-topic", type=str, default="/camera/depth/image_rect_raw", help="The topic to subscribe to for depth images.")
+    parser.add_argument("--yolo-model", type=str, default="yolov8m.pt", help="The modelfile for YOLO")
+    parser.add_argument("--sam-checkpoint", type=str, default="sam_vit_h_4b8939.pth", help="The modelfile for YOLO")
+    parser.add_argument("--rate", type=int, default=60, help="The rate at which to run the model.")
+    parser.add_argument("--classes", type=str, nargs="+", default=[], help="A list of classes to isolate. If empty, all classes will be used.")
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     Drake.main(**vars(args))

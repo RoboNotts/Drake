@@ -1,0 +1,10 @@
+<launch>
+    <arg name="name" value="drake" />
+    <arg name="sam-checkpoint" value="$(find drake)/sam_vit_h_4b8939.pth"/>
+    <arg name="image-topic" value="/top/color/image_raw" />
+    <arg name="depth-topic" value="/top/color/image_raw" />
+    <arg name="model" value="yolov8n.pt"/>
+    <arg name="rate" value="60"/>
+    <arg name="classes" value="[]"/>
+    <node name="$(arg name)" pkg="drake" type="drake_node" args="--image-topic $(arg image-topic) --depth-topic $(arg depth-topic) --model $(arg model) --rate $(arg rate) --classes $(arg classes) --name $(arg name) --sam-checkpoint $(arg sam-checkpoint)"/>
+</launch>
