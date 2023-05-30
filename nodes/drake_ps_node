@@ -13,6 +13,9 @@ if __name__=="__main__":
         if pythonised_key in args.keys():
             raise ValueError(f"Duplicate argument: {pythonised_key}")
         args[pythonised_key] = value
+    
+    if "classes" in args.keys():
+        args["classes"] = list(int(x) for x in args["classes"].split(","))
 
     rospy.loginfo(str(args))
     Drake.main(**args)
