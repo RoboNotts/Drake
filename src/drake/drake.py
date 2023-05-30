@@ -57,7 +57,9 @@ class Drake:
         
         # Get Image and Depth
         image = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
-        depth = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding='mono8')
+        depth = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding=cv2.CV_16U)
+
+        depth = depth.astype(np.float32)
 
         # Use YOLO model to predict
         results = list(self.model.predict(image, classes=self.classes))
