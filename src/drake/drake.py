@@ -33,6 +33,7 @@ class Drake:
         }
         
         self.current_rgb_data = None
+        self.current_depth_data = None
         self.runs_since_image = 0
 
     # When we get an Image msg
