@@ -14,5 +14,5 @@ if __name__=="__main__":
             raise ValueError(f"Duplicate argument: {pythonised_key}")
         args[pythonised_key] = value
 
-    rospy.loginfo(str(args) + "\n")
+    rospy.loginfo(str(args))
     Drake.main(**args)

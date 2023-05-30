@@ -1,6 +1,7 @@
 import rospy
 import cv_bridge
 import cv2
+import os
 from drake.msg import DrakeResults, DrakeResult
 from sensor_msgs.msg import Image
 from linnaeus.linnaeus_ultima import LinnaeusUltima
@@ -87,7 +88,7 @@ class Drake:
 
             # draw rectangle
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-            frame = cv2.putText(frame, f"{clsname} {conf}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+            frame = cv2.putText(frame, f"{clsname} {conf:.3f}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (255, 40, 0), 2)
             
             frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
@@ -99,7 +100,7 @@ class Drake:
     
     @staticmethod
     def main(*args, name, rate, **kwargs):
-        rospy.init_node(name)
+        rospy.init_node(name, xmlrpc_port=int(os.environ.get("DRAKE_XMLRPC_PORT", 0)), tcpros_port=int(os.environ.get("DRAKE_TCPROS_PORT", 0)))
         d = Drake(name=name, *args, **kwargs)
         rate = rospy.Rate(rate)
         while not rospy.is_shutdown(): # Main loop.
