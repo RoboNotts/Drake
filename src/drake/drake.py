@@ -47,7 +47,8 @@ class Drake:
     # Takes an image, runs it through the model
     def _processImage(self):
         rgb_data = self.current_rgb_data
-        if(rgb_data is None):
+        depth_data = self.current_depth_data
+        if(rgb_data is None or depth_data is None):
             # No image.
             self.runs_since_image += 1
             if (self.runs_since_image >= 60): 
@@ -58,9 +59,7 @@ class Drake:
         
         # Get Image and Depth
         image = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
-        depth = self.bridge.imgmsg_to_cv2(self.current_depth_data, desired_encoding=cv2.CV_16U)
-
-        depth = depth.astype(np.float32)
+        depth = self.bridge.imgmsg_to_cv2(depth_data, desired_encoding='passthrough')
 
         # Use YOLO model to predict
         results = list(self.model.predict(image, classes=self.classes))
@@ -89,12 +88,13 @@ class Drake:
             color = np.array([30, 144, 255])
             mask_image = (mask.reshape(h, w, 1).cpu().numpy() * color.reshape(1, 1, -1)).astype(np.uint8)
 
-            # draw rectangle
+            # draw stuff
+            frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
             frame = cv2.putText(frame, f"{clsname} {conf:.3f}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (255, 40, 0), 2)
-            
-            frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
+            frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xcentroid, ycentroid), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (255, 40, 0), 2)
         
         self.publishers["results"].publish(box_output)
         self.publishers["image_with_decor"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
