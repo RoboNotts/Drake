@@ -57,7 +57,7 @@ class Drake:
         
         # Get Image and Depth
         image = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
-        depth = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding=cv2.CV_16U)
+        depth = self.bridge.imgmsg_to_cv2(self.current_depth_data, desired_encoding=cv2.CV_16U)
 
         depth = depth.astype(np.float32)
 
