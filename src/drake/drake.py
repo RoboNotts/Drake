@@ -87,7 +87,7 @@ class Drake:
 
             # draw rectangle
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-            frame = cv2.putText(frame, f"{clsname} {conf}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+            frame = cv2.putText(frame, f"{clsname} {round(conf,3)}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (255, 40, 0), 2)
             
             frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
