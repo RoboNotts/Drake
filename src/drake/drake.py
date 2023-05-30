@@ -7,7 +7,7 @@ from linnaeus.linnaeus_ultima import LinnaeusUltima
 import numpy as np
 
 class Drake:
-    def __init__(self, name, image_topic, depth_topic, classes, *args, **kwargs):
+    def __init__(self, name, image_topic, depth_topic, classes, *args, log = None, **kwargs):
         # # Initialise the Model
         # load class list
     
@@ -66,27 +66,24 @@ class Drake:
         box_output.results_count = len(results)
         box_output.results = []
 
+        # Make a copy of the image to draw on
+        frame = image.copy()
+
         for cls, clsname, conf, mask, xyxy in results:
             h, w = mask.shape[-2:]
-            mask_image = (mask.reshape(h, w) * np.array([1]).reshape(1, 1)).cpu().numpy()
+            mask_binary = mask.reshape(h, w).cpu().numpy() * np.array([1]).reshape(1, 1)
             
-            moments = cv2.moments(mask_image, binaryImage=True)
-            x_centroid = int(moments["m10"] / moments["m00"])
-            y_centroid = int(moments["m01"] / moments["m00"])
-            z_centroid = depth[y_centroid, x_centroid]
-
-            box_output.results.append(DrakeResult(cls, clsname, conf, *xyxy, x_centroid, y_centroid, z_centroid))
-        
-        self.publishers["results"].publish(box_output)
-
-        # Publish the image with the segments
-        frame = image.copy()
-        for cls, clsname, conf, mask, xyxy in results:
+            moments = cv2.moments(mask_binary, binaryImage=True)
+            xcentroid = int(moments["m10"] / moments["m00"])
+            ycentroid = int(moments["m01"] / moments["m00"])
+            zcentroid = depth[ycentroid, xcentroid]
+            
             xmin, ymin, xmax, ymax = (int(a.item()) for a in xyxy)
 
+            box_output.results.append(DrakeResult(object_class=int(cls), object_class_name=clsname, confidence=conf, xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, xcentroid=xcentroid, ycentroid=ycentroid, zcentroid=zcentroid))
+
             color = np.array([30, 144, 255])
-            h, w = mask.shape[-2:]
-            mask_image = (mask.reshape(h, w, 1) * color.reshape(1, 1, -1)).cpu().numpy().astype(np.uint8)
+            mask_image = (mask.reshape(h, w, 1).cpu().numpy() * color.reshape(1, 1, -1)).astype(np.uint8)
 
             # draw rectangle
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
@@ -94,9 +91,11 @@ class Drake:
                                 (255, 40, 0), 2)
             
             frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
+        
+        self.publishers["results"].publish(box_output)
         self.publishers["image_with_decor"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
         
-        cv2.imwrite("test.jpg", frame)
+        # cv2.imwrite("test.jpg", frame)
     
     @staticmethod
     def main(*args, name, rate, **kwargs):

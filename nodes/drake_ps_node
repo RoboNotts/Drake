@@ -1,0 +1,18 @@
+from drake.drake import Drake
+import rospy
+import sys
+import re
+
+if __name__=="__main__":
+    # Load arguments from rospy
+    args = {}
+    for match in re.finditer(r"(?P<arg>[A-Z0-9]+)\s*:=\s*(?P<value>\S+)", " ".join(sys.argv[1:]), re.IGNORECASE):
+        args[match.group("arg")] = match.group("value")
+    for key, value in rospy.get_param(args.get("name", "drake")).items():
+        pythonised_key = key.lower().replace("-", "_")
+        if pythonised_key in args.keys():
+            raise ValueError(f"Duplicate argument: {pythonised_key}")
+        args[pythonised_key] = value
+
+    rospy.loginfo(str(args) + "\n")
+    Drake.main(**args)

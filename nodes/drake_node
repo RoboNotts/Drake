@@ -13,7 +13,8 @@ if __name__=="__main__":
     parser.add_argument("--yolo-model", type=str, default="yolov8m.pt", help="The modelfile for YOLO")
     parser.add_argument("--sam-checkpoint", type=str, default="sam_vit_h_4b8939.pth", help="The modelfile for YOLO")
     parser.add_argument("--rate", type=int, default=60, help="The rate at which to run the model.")
-    parser.add_argument("--classes", type=str, nargs="+", default=[], help="A list of classes to isolate. If empty, all classes will be used.")
+    parser.add_argument("--classes", type=int, nargs="*", default=[], help="A list of classes to isolate. If empty, all classes will be used.")
+    parser.add_argument("--device", type=str, default="cpu", help="The device to run the model on. Defaults to cpu.")
 
     args, _ = parser.parse_known_args()
     Drake.main(**vars(args))
