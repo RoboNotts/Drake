@@ -91,10 +91,12 @@ class Drake:
             # draw stuff
             frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-            frame = cv2.putText(frame, f"{clsname} {conf:.3f}", (xmin, ymin - 5), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                (255, 40, 0), 2)
-            frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xcentroid, ycentroid), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                (255, 40, 0), 2)
+            frame = cv2.putText(frame, f"{clsname[:3]} {conf:.2f}", (xmin, ymin - 10), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (255, 40, 0), 1)
+            frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xmin, ymin + 30), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (50, 0, 240), 1)
+            frame = cv2.putText(frame, f"y={ycentroid}", (xmin, ymin + 50), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                (80, 0, 200), 1)
         
         self.publishers["results"].publish(box_output)
         self.publishers["image_with_decor"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))

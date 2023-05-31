@@ -1,7 +1,7 @@
 <launch>
     <arg name="sam-checkpoint" default="$(find drake)/sam_vit_h_4b8939.pth"/>
-    <arg name="image-topic" default="/top/color/image_raw"/>
-    <arg name="depth-topic" default="/top/aligned_depth_to_color/image_raw"/>
+    <arg name="image-topic" default="/bottom/color/image_raw"/>
+    <arg name="depth-topic" default="/bottom/aligned_depth_to_color/image_raw"/>
     <arg name="yolo-model" default="yolov8n.pt"/>
     <arg name="rate" default="60"/>
     <arg name="device" default="cpu"/>
