@@ -3,7 +3,8 @@ import cv_bridge
 import cv2
 import os
 from drake.msg import DrakeResults, DrakeResult
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, PointCloud2
+from sensor_msgs.point_cloud2 import read_points_list
 from linnaeus.linnaeus_ultima import LinnaeusUltima
 import numpy as np
 
@@ -29,7 +30,8 @@ class Drake:
         # ## Setup subscribers
         self.subscribers = {
             "image" : rospy.Subscriber(image_topic, Image, self._onImageReceived),
-            "depth_cloud": rospy.Subscriber(depth_topic, Image, self._onDepthReceived)
+            "depth_cloud": rospy.Subscriber(depth_topic, PointCloud2, self._onDepthReceived),
+
         }
         
         self.current_rgb_data = None
@@ -51,15 +53,17 @@ class Drake:
         if(rgb_data is None or depth_data is None):
             # No image.
             self.runs_since_image += 1
-            if (self.runs_since_image >= 60): 
-                rospy.logwarn("Waiting for image...")
+            if (self.runs_since_image >= 60):
+                if (rgb_data is None):
+                    rospy.logwarn("Waiting for image...")
+                if (depth_data is None):
+                    rospy.logwarn("Waiting for depthcloud...")
                 self.runs_since_image = 0
             return
         self.runs_since_image = 0
         
         # Get Image and Depth
         image = self.bridge.imgmsg_to_cv2(rgb_data, desired_encoding='bgr8') # Makes the ROS image work with pyTorch
-        depth = self.bridge.imgmsg_to_cv2(depth_data, desired_encoding='passthrough')
 
         # Use YOLO model to predict
         results = list(self.model.predict(image, classes=self.classes))
@@ -79,11 +83,13 @@ class Drake:
             moments = cv2.moments(mask_binary, binaryImage=True)
             xcentroid = int(moments["m10"] / moments["m00"])
             ycentroid = int(moments["m01"] / moments["m00"])
-            zcentroid = depth[ycentroid, xcentroid]
             
+            x3d, y3d, z3d = read_points_list(depth_data, uvs = [(xcentroid, ycentroid)])[0]
+
+    
             xmin, ymin, xmax, ymax = (int(a.item()) for a in xyxy)
 
-            box_output.results.append(DrakeResult(object_class=int(cls), object_class_name=clsname, confidence=conf, xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, xcentroid=xcentroid, ycentroid=ycentroid, zcentroid=zcentroid))
+            box_output.results.append(DrakeResult(object_class=int(cls), object_class_name=clsname, confidence=conf, xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, xcentroid=xcentroid, ycentroid=ycentroid, x3d=x3d, y3d=y3d, z3d=z3d))
 
             color = np.array([30, 144, 255])
             mask_image = (mask.reshape(h, w, 1).cpu().numpy() * color.reshape(1, 1, -1)).astype(np.uint8)
@@ -93,7 +99,7 @@ class Drake:
             frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
             frame = cv2.putText(frame, f"{clsname[:3]} {conf:.2f}", (xmin, ymin - 10), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (255, 40, 0), 1)
-            frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xmin, ymin + 30), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+            frame = cv2.putText(frame, f"{z3d / 1000:.2f}m", (xmin, ymin + 30), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (50, 0, 240), 1)
             frame = cv2.putText(frame, f"y={ycentroid}", (xmin, ymin + 50), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                                 (80, 0, 200), 1)

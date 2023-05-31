@@ -7,4 +7,6 @@ float64 xmax
 float64 ymax
 float64 xcentroid
 float64 ycentroid
-float64 zcentroid
+float64 x3D
+float64 y3D
+float64 z3D
