@@ -8,7 +8,7 @@ from linnaeus.linnaeus_ultima import LinnaeusUltima
 import numpy as np
 
 class Drake:
-    def __init__(self, name, image_topic, depth_topic, classes, *args, log = None, **kwargs):
+    def __init__(self, name, image_topic, depth_topic, classes, *args, broadcast_image = False, log = None, **kwargs):
         # # Initialise the Model
         # load class list
     
@@ -35,6 +35,7 @@ class Drake:
         self.current_rgb_data = None
         self.current_depth_data = None
         self.runs_since_image = 0
+        self.broadcast_image = broadcast_image
 
     # When we get an Image msg
     def _onImageReceived(self, msg):
@@ -70,7 +71,9 @@ class Drake:
         box_output.results = []
 
         # Make a copy of the image to draw on
-        frame = image.copy()
+        frame = None
+        if self.broadcast_image:
+            frame = image.copy()
 
         for cls, clsname, conf, mask, xyxy in results:
             h, w = mask.shape[-2:]
@@ -89,19 +92,19 @@ class Drake:
             mask_image = (mask.reshape(h, w, 1).cpu().numpy() * color.reshape(1, 1, -1)).astype(np.uint8)
 
             # draw stuff
-            frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
-            frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
-            frame = cv2.putText(frame, f"{clsname[:3]} {conf:.2f}", (xmin, ymin - 10), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                (255, 40, 0), 1)
-            frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xmin, ymin + 30), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                (50, 0, 240), 1)
-            frame = cv2.putText(frame, f"y={ycentroid}", (xmin, ymin + 50), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                                (80, 0, 200), 1)
+            if frame is not None:
+                frame = cv2.addWeighted(frame, 1, mask_image, 0.6, 0)
+                frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 200), 2)
+                frame = cv2.putText(frame, f"{clsname[:3]} {conf:.2f}", (xmin, ymin - 10), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                    (255, 40, 0), 1)
+                frame = cv2.putText(frame, f"{zcentroid / 1000:.2f}m", (xmin, ymin + 30), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                    (50, 0, 240), 1)
+                frame = cv2.putText(frame, f"y={ycentroid}", (xmin, ymin + 50), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                                    (80, 0, 200), 1)
         
         self.publishers["results"].publish(box_output)
-        self.publishers["image_with_decor"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
-        
-        # cv2.imwrite("test.jpg", frame)
+        if frame is not None:
+            self.publishers["image_with_decor"].publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
     
     @staticmethod
     def main(*args, name, rate, **kwargs):

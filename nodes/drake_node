@@ -15,6 +15,7 @@ if __name__=="__main__":
     parser.add_argument("--rate", type=int, default=60, help="The rate at which to run the model.")
     parser.add_argument("--classes", type=int, nargs="*", default=[], help="A list of classes to isolate. If empty, all classes will be used.")
     parser.add_argument("--device", type=str, default="cpu", help="The device to run the model on. Defaults to cpu.")
+    parser.add_argument("--broadcast_image", type=bool, default=False, help="Whether to broadcast the image with the results. Defaults to False.")
 
     args, _ = parser.parse_known_args()
     Drake.main(**vars(args))

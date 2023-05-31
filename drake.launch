@@ -1,16 +1,17 @@
 <launch>
-    <arg name="sam-checkpoint" default="$(find drake)/sam_vit_h_4b8939.pth"/>
-    <arg name="image-topic" default="/bottom/color/image_raw"/>
-    <arg name="depth-topic" default="/bottom/aligned_depth_to_color/image_raw"/>
-    <arg name="yolo-model" default="yolov8n.pt"/>
+    <arg name="name" default="drake"/>
+    <arg name="sam_checkpoint" default="$(find drake)/sam_vit_h_4b8939.pth"/>
+    <arg name="image_topic" default="/bottom/color/image_raw"/>
+    <arg name="depth_topic" default="/bottom/aligned_depth_to_color/image_raw"/>
+    <arg name="yolo_model" default="yolov8n.pt"/>
     <arg name="rate" default="60"/>
     <arg name="device" default="cpu"/>
     <arg name="classes" default=""/>
-    <node name="drake" pkg="drake" type="drake_ps_node">
-        <param name="sam-checkpoint" value="$(arg sam-checkpoint)"/>
-        <param name="image-topic" value="$(arg image-topic)"/>
-        <param name="depth-topic" value="$(arg depth-topic)"/>
-        <param name="yolo-model" value="$(arg yolo-model)"/>
+    <node name="$(arg name)" pkg="drake" type="drake_ps_node">
+        <param name="sam_checkpoint" value="$(arg sam_checkpoint)"/>
+        <param name="image_topic" value="$(arg image_topic)"/>
+        <param name="depth_topic" value="$(arg depth_topic)"/>
+        <param name="yolo_model" value="$(arg yolo_model)"/>
         <param name="rate" value="$(arg rate)"/>
         <param name="device" value="$(arg device)"/>
         <param name="classes" value="$(arg classes)"/>

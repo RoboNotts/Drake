@@ -10,10 +10,19 @@ if __name__=="__main__":
         args[match.group("arg")] = match.group("value")
     for key, value in rospy.get_param(args.get("name", "drake")).items():
         pythonised_key = key.lower().replace("-", "_")
-        args[pythonised_key] = value
+        # Args from the command line take precedence
+        args.setdefault(pythonised_key, value)
     
     if "classes" in args.keys():
-        args["classes"] = list(int(x) for x in args["classes"].split(","))
+        if isinstance(args["classes"], int):
+            args["classes"] = [args["classes"]]
+        elif isinstance(args["classes"], str):
+            if args["classes"] == "":
+                args["classes"] = []
+            else:
+                args["classes"] = list(int(x) for x in args["classes"].split(","))
+        else:
+            raise ValueError("Classes must be a list of integers.")
 
     rospy.loginfo(str(args))
     Drake.main(**args)
