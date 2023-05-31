@@ -92,7 +92,7 @@ class Drake:
     def _publishBoxes(self, boxes):
         output = DrakeResults()
         output.resultsCount = len(boxes)
-        output.results = [DrakeResult(*box) for box in boxes]
+        output.results = [DrakeResult(box[0], self.classes[box[0]], *box[1:], (box[0] + box[2]) / 2, (box[0] + box[2]) / 2, 0) for box in boxes]
 
         self.publishers["bounding_boxes"].publish(output)
     
